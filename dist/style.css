@@ -98,3 +98,64 @@ h1{font-size:clamp(2.8rem,7vw,7rem);letter-spacing:-.035em;line-height:1.05}
 .hero .button span{background:#edf0e8;color:#173c4d}
 .hero .replay{opacity:.7}
 @media(max-width:690px){.hero{padding-bottom:4rem}.hero h1{font-size:clamp(2.8rem,9vw,4rem)}}
+
+/* Opening landscape and the transition into the editorial section. */
+:root{--paper:#eeede6;--ink:#222823;--editorial:#d8d8cd}
+header{background:#eeede6ed}
+.hero{
+  min-height:calc(100svh - 4.5rem);
+  background:#a2bbc5;
+  color:#14272b;
+  padding:9rem var(--pad) 8rem;
+}
+.landscape{
+  position:absolute;inset:-7% 0;z-index:-2;
+  background:linear-gradient(180deg,#8db0c3,#dce5e1 74%,#6d7661 75%,#495443);
+  background-size:cover;background-position:center;
+  transform:translateY(var(--travel,0px)) scale(var(--zoom,1.04));
+}
+.hero:before{display:block;background:radial-gradient(circle,#182e3626 .6px,transparent .8px) 0 0/4px 4px;mask-image:radial-gradient(ellipse at 50% 42%,transparent 24%,#000 78%);opacity:.65}
+.hero:after{background:radial-gradient(ellipse at 50% 40%,#eff3eec7,transparent 61%);pointer-events:none}
+.hero-symbol{top:1rem;width:clamp(65px,8vw,105px);color:#173740}
+.hero-content{transform:none;text-shadow:none}
+.hero h1{font-size:clamp(4rem,10vw,9.5rem);line-height:.92;letter-spacing:-.075em}
+.hero-content>p:not(.eyebrow){max-width:31ch}
+.intro{display:block;background:var(--editorial);padding-block:clamp(5rem,13vw,11rem)}
+.intro h2{max-width:16ch;font-weight:700}
+.intro .lead{font-family:Georgia,serif;line-height:1.25;font-size:clamp(1.35rem,3vw,2rem)}
+.method{background:#e6e3d8}
+.method-grid{padding-block:clamp(4rem,8vw,7rem)}
+.steps .map-step,.steps .map-step:last-child{min-height:clamp(11rem,29vh,17rem);padding:.65rem 0}
+.map-card{opacity:1;transform:none;border-radius:1.25rem}
+.map-step.active .map-card{transform:translateY(-3px)}
+.services{padding-block:clamp(3rem,7vw,6rem)}
+.services h2{margin-bottom:0}
+.contact{background:#d9ded6}
+.contact>.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,6vw,6rem)}
+.diagnostic{padding:clamp(1.3rem,4vw,2.5rem);border:1px solid #bbc2b7;border-radius:1.25rem;background:#f6f5ef;min-width:0}
+.diagnostic fieldset{margin:0;padding:0;border:0;min-width:0}
+.diagnostic legend{font-weight:700;font-size:1.4rem;line-height:1.2;margin-bottom:.8rem}
+.diagnostic .form-progress,.diagnostic .preview-note,.diagnostic .form-status{font-size:.9rem;margin:0 0 .8rem}
+.diagnostic label{display:flex;align-items:center;gap:.65rem;margin:.5rem 0;padding:.65rem;border:1px solid #c9cbc1;border-radius:.6rem;cursor:pointer}
+.diagnostic label:has(:checked){background:#e0e6dc;border-color:#6b7d70}
+.diagnostic .email-label{display:grid;cursor:auto;border:0;padding:0}
+.diagnostic input[type=email]{font:inherit;border:1px solid #919c93;background:white;border-radius:.45rem;padding:.6rem;width:100%}
+.form-actions{display:flex;align-items:center;gap:1rem;margin-top:1.2rem}
+.form-actions button{font:inherit;cursor:pointer}
+.form-back{border:0;background:none;text-decoration:underline;color:inherit}
+.form-next{border:0}
+.diagnostic .form-status:not(:empty){margin:1rem 0 0}
+@media(max-width:690px){
+  .hero{padding-block:8rem 6rem}
+  .hero h1{font-size:clamp(3.3rem,13vw,5rem)}
+  .contact>.wrap{grid-template-columns:1fr}
+  .steps .map-step,.steps .map-step:last-child{min-height:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .landscape,.map-step.active .map-card{transform:none}
+}
+.landscape{
+  background-image:url("assets/cielo-y-tierra.jpg");
+  background-position:center bottom;
+}
+@media(max-width:690px){.landscape{background-position:68% bottom}}

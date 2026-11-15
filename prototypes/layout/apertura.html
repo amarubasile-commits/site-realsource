@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>realsource — Consultora de marca y crecimiento</title>
+<style>
+@font-face{font-family:"Neue Haas Grotesk";src:url("fonts/HaasGrotDisp-95Black.otf") format("opentype");font-weight:900;font-display:block}
+@font-face{font-family:"Neue Haas Grotesk";src:url("fonts/HaasGrotDisp-55Roman.otf") format("opentype");font-weight:400;font-display:block}
+@font-face{font-family:"Neue Haas Grotesk";src:url("fonts/HaasGrotDisp-65Medium.otf") format("opentype");font-weight:500;font-display:block}
+@font-face{font-family:"Neue Haas Grotesk";src:url("fonts/HaasGrotDisp-75Bold.otf") format("opentype");font-weight:700;font-display:block}
+:root{
+  --landscape-photo:url("paisaje.jpg");
+}
+:root{
+  color-scheme:light;
+  --paper:#f3f0e7;
+  --promise-gray:#e9e7e0;
+  --ink:#152932;
+  --edge:clamp(1.15rem,5vw,5rem);
+  font-family:"Neue Haas Grotesk","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+body{margin:0;background:var(--paper);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+a{color:inherit;text-decoration:none}
+a:focus-visible{outline:2px solid currentColor;outline-offset:5px}
+header{
+  position:fixed;z-index:4;inset:0 0 auto;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;padding:1rem var(--edge);
+  color:var(--paper);transition:background-color .2s,color .2s;
+}
+.brand{font-size:clamp(1.4rem,3vw,2rem);font-weight:700;letter-spacing:-.07em}
+.nav-link,.pill{display:inline-flex;align-items:center;gap:.65em;border-radius:100px;font-weight:500}
+.nav-link{border:1px solid currentColor;padding:.55em .9em;font-size:.84rem}
+.runway{position:relative;min-height:197svh;background:#155eae}
+.scene{
+  position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate;
+  display:grid;place-items:center;color:var(--paper);perspective:1000px;
+}
+.landscape,.shade{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.landscape{
+  inset:-8%;
+  background:#236db6 var(--landscape-photo) center 78% / cover no-repeat;
+  transform:translate3d(0,var(--scenery-y,0px),0) scale(var(--scenery-scale,1.1));
+}
+.shade{background:linear-gradient(180deg,#04284b65 0%,#0f3d6918 30%,transparent 60%,#152d2255)}
+.mark{
+  position:absolute;width:min(84vw,78svh);aspect-ratio:1;top:50%;left:50%;
+  transform:translate3d(-50%,calc(-50% + var(--mark-y,14svh)),0)
+    rotateY(var(--mark-angle,-20deg)) rotateZ(var(--mark-roll,-12deg))
+    scale(var(--mark-scale,1.18));
+  transform-style:preserve-3d;pointer-events:none;
+}
+.mark svg{display:block;width:100%;height:100%;overflow:visible}
+.message{
+  position:relative;width:min(100% - 2.3rem,58rem);margin-top:9svh;text-align:center;
+  opacity:var(--message-opacity,0);
+  text-shadow:0 2px 18px #10365b90;
+}
+.message[data-waiting]{visibility:hidden}
+.eyebrow{
+  margin:1rem 0 0;font-size:clamp(.79rem,1.35vw,1.06rem);font-weight:400;
+  letter-spacing:.31em;line-height:1.5;text-wrap:balance;
+}
+h1,h2{margin:0;font-weight:700;letter-spacing:-.035em;line-height:.95;text-wrap:balance}
+h1{font-size:clamp(3.25rem,9vw,8rem);font-weight:900;color:#fff}
+h2{font-size:clamp(3rem,7vw,6.6rem)}
+.pill{margin-top:1.6rem;background:var(--paper);color:var(--ink);padding:.72em 1.1em;text-shadow:none}
+.scroll-cue{
+  position:absolute;bottom:1.5rem;left:50%;translate:-50% 0;padding:.55rem .9rem;
+  border:1px solid #ffffff90;border-radius:100px;background:#14345366;
+}
+.scroll-cue[hidden]{display:none}
+footer{padding:1.5rem var(--edge);border-top:1px solid #15293225}
+@media(max-width:650px){.landscape{background-position:58% 100%}.mark{width:min(100vw,71svh)}}
+@media(max-height:520px){h1{font-size:clamp(2.5rem,6.5vw,4rem)}.message{margin-top:12svh}.message .pill{margin-top:.7rem}}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  header{transition:none}
+  .runway{min-height:100svh}
+  .mark{transform:translate(-50%,-50%) translateY(-29svh) scale(.25)}
+  .landscape{transform:scale(1.04)}
+  .message{opacity:1;transform:none}
+  .scroll-cue{display:none}
+}
+
+/* The landscape spans the intro and the product scenes. */
+:root{
+  --cycle:3s;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+}
+header{height:4.25rem;background:linear-gradient(#073868a8,transparent)}
+.nav-mark{
+  position:absolute;left:50%;top:50%;width:2.5rem;transform:translate(-50%,-50%);
+  opacity:var(--nav-opacity,0);visibility:hidden;
+}
+header.docked .nav-mark{visibility:visible}
+.nav-mark svg{display:block;width:100%}
+main{position:relative;isolation:isolate;background:#155eae}
+.backdrop{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}
+.landscape{
+  inset:-9%;background-position:center 84%;
+  transform:translate3d(0,var(--scenery-y,0px),0) scale(var(--scenery-scale,1.08));
+}
+/* Trama de cielo del manual, con un centro despejado y tierra en foto. */
+.backdrop .landscape{filter:saturate(.76) contrast(.93)}
+.shade{
+  background:linear-gradient(180deg,#2347607a,#406b871a 38%,#24455418 66%,#172e3b9c);
+}
+.sky-texture{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle,#f1eee4b8 .65px,transparent 1px) 0 0/4px 4px;
+  opacity:.38;
+  mask-image:
+    linear-gradient(#000 0 61%,transparent 75%),
+    radial-gradient(ellipse at 50% 46%,transparent 0 29%,#000 68%);
+  mask-composite:intersect;
+}
+@media(max-width:650px){
+  .sky-texture{
+    mask-image:
+      linear-gradient(#000 0 59%,transparent 74%),
+      radial-gradient(ellipse at 50% 47%,transparent 0 40%,#000 81%);
+  }
+}
+.runway{
+  min-height:calc(var(--intro-height,212svh) + var(--section-overlap,100svh));
+  margin-bottom:calc(-1 * var(--section-overlap,100svh));
+  background:transparent;
+}
+.scene{perspective:none}
+.mark{
+  top:0;width:2.5rem;
+  transform:translate3d(-50%,var(--mark-y,calc(60svh - 1.25rem)),0)
+    rotate(var(--mark-turn,0deg)) scale(var(--mark-scale,9));
+  opacity:var(--mark-opacity,1);
+}
+.chapters{color:#fff;padding:0 var(--edge) 8svh}
+.chapter{
+  position:relative;max-width:68rem;margin:auto;min-height:90svh;padding:12svh 0;
+  display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:clamp(1.5rem,5vw,5rem);align-items:center;
+}
+.chapter-copy{text-shadow:0 1px 18px #06355ab8}
+.chapter-copy p:last-child{font-size:clamp(1.12rem,2vw,1.5rem);max-width:29ch;line-height:1.45}
+.demo{
+  color:#162d3b;background:#f7f9fb;border-radius:1rem;overflow:hidden;
+  box-shadow:0 2rem 4rem #06264366;
+  transform:perspective(950px) translateY(var(--panel-y,0px)) rotateX(var(--panel-tilt,0deg));
+  opacity:var(--panel-opacity,1);
+}
+.demo-bar{display:flex;justify-content:space-between;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid #d7e0e7;font-size:.85rem}
+.demo-bar span{color:#526579}
+.demo-body{padding:clamp(1.25rem,4vw,2.8rem)}
+.demo-body strong{display:block;font-size:clamp(1.3rem,3vw,2rem);margin-bottom:1rem}
+.demo-choice,.demo-grid span{padding:.8rem;border-radius:.4rem;background:#eaf1f7;margin-top:.55rem}
+.demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+footer{position:relative;background:#123755;color:#fff}
+@media(max-width:650px){
+  .landscape{background-position:65% bottom}
+  .mark{width:2.5rem}
+  header .nav-link{font-size:.7rem;padding:.5em .65em}
+  .chapter{min-height:82svh;grid-template-columns:1fr;align-content:center}
+}
+@media(prefers-reduced-motion:reduce){
+  .mark{display:none}
+  .backdrop .landscape{transform:none}
+  .demo{transform:none;opacity:1}
+}
+
+.half,.cover{fill:#fff}
+.half,.logo{transform-box:view-box;transform-origin:960px 457.8px}
+.logo{animation:enter var(--cycle) both}
+@keyframes enter{0%{opacity:0;transform:scale(.96);animation-timing-function:var(--ease-out)}10%,100%{opacity:1;transform:scale(1)}}
+/* el rayo: borde en zigzag que cruza de izquierda a derecha en ~330 ms, arranca a toda velocidad y frena */
+.bolt{animation:bolt var(--cycle) both}
+@keyframes bolt{0%,16%{transform:translateX(-24px);animation-timing-function:var(--ease-out)}27%,100%{transform:translateX(200px)}}
+.top{animation:nudgeT var(--cycle) both}.bot{animation:nudgeB var(--cycle) both}
+@keyframes nudgeT{0%,28%{transform:translate(0,0);animation-timing-function:var(--ease-out)}35%{transform:translate(-3px,-3px);animation-timing-function:var(--ease-in-out)}48%,100%{transform:translate(0,0)}}
+@keyframes nudgeB{0%,28%{transform:translate(0,0);animation-timing-function:var(--ease-out)}35%{transform:translate(3px,3px);animation-timing-function:var(--ease-in-out)}48%,100%{transform:translate(0,0)}}
+
+@media(prefers-reduced-motion:reduce){
+  .mark .logo,.mark .half,.mark .bolt{animation:none}
+  .mark .bolt{transform:translateX(200px)}
+}
+
+header.solid{background:#172d34;color:#fff}
+header.on-thesis{background:#000;color:#fff}
+.layout-body{position:relative;background:#f3f0e7;color:#172d34}
+.capabilities{position:relative;color:#fff;background:#164c80}
+.capabilities-frame{
+  position:relative;isolation:isolate;overflow:hidden;display:grid;place-items:center;
+  padding:clamp(5rem,12svh,9rem) var(--edge);
+}
+.capabilities-frame .cloudscape{z-index:-2}
+.capabilities-frame::after{
+  content:"";position:absolute;z-index:-1;inset:0;
+  background:linear-gradient(170deg,#14335b8c,#215b8870 58%,#2396c833);
+}
+.capability-list{
+  position:relative;z-index:1;
+  display:grid;gap:clamp(1.5rem,4svh,2.5rem);justify-items:center;
+  width:min(100%,68rem);margin:0;padding:0;list-style:none;text-align:center;
+}
+.capability-list h2{
+  max-width:16ch;font-size:clamp(2.55rem,8.5vw,8.4rem);font-weight:900;color:#fff;
+  margin-inline:auto;line-height:.96;letter-spacing:-.045em;text-wrap:balance;
+  text-shadow:0 .1em .35em #1032523d;
+}
+.capability-list p{
+  max-width:38ch;margin:clamp(.9rem,2.8svh,1.6rem) auto 0;
+  font-size:clamp(1.05rem,2.1vw,1.5rem);line-height:1.4;text-wrap:pretty;
+  color:#fff;text-shadow:0 1px 12px #102d54b3;
+}
+.capability-zoom-word{white-space:nowrap}
+.capability-zoom-letter{
+  display:inline-block;width:.584em;height:.541em;vertical-align:-.016em;
+}
+.capability-zoom-letter svg{
+  display:block;width:100%;height:100%;overflow:visible;
+}
+.capability-zoom-counter{opacity:0}
+.capability-zoom-letter-text{
+  position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);
+}
+@media(max-height:540px){
+  .capabilities-frame{padding-block:clamp(2.75rem,11svh,4.75rem)}
+  .capability-list h2{font-size:clamp(1.9rem,min(8.5vw,11svh),4.6rem)}
+}
+@media(prefers-reduced-motion:no-preference){
+  .capabilities.is-animated{min-height:435svh}
+  .capabilities.is-animated .capabilities-frame::before{
+    content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:#000;opacity:var(--capability-black,0);
+  }
+  .capability-zoom-title{position:relative}
+  .capability-zoom-counter{opacity:var(--zoom-counter,0)}
+  .capabilities.is-animated .capabilities-frame{position:sticky;top:0;min-height:100svh}
+  .capabilities.is-animated .capability-list li{
+    position:relative;grid-area:1 / 1;align-self:center;
+    opacity:var(--capability-opacity,0);
+    translate:0 calc(var(--capability-shift,0) * clamp(1.4rem,5svh,3.5rem));
+    transition:opacity .12s ease-out,translate .12s ease-out;
+    transform-origin:var(--zoom-origin-x,50%) var(--zoom-origin-y,50%);
+    transform:translate(var(--zoom-x,0px),var(--zoom-y,0px)) scale(var(--zoom-scale,1));
+  }
+}
+@media(max-width:650px){
+  .capabilities-frame .cloudscape{--cloud-position:68% center}
+}
+.layout-section{padding:clamp(3.5rem,9vw,8rem) var(--edge)}
+.layout-wrap{max-width:72rem;margin:auto}
+.layout-section h2{font-size:clamp(2.6rem,5.8vw,5.6rem);max-width:21ch}
+.layout-section h3{font-size:clamp(1.15rem,2vw,1.6rem);letter-spacing:-.035em;margin:.1rem 0 .6rem}
+.layout-section p{line-height:1.55}
+.editorial-copy{max-width:43rem;margin:1.5rem 0 2.5rem}
+.thesis{
+  --thesis-copper:#ddc7a6;
+  --thesis-coral:#e6795b;
+  --thesis-sage:#9ea89e;
+  background:#000;color:#fff;
+}
+.thesis-frame{
+  position:relative;display:grid;align-items:center;min-height:62svh;
+  padding:6rem var(--edge);
+}
+.thesis-title{
+  position:relative;width:fit-content;max-width:22ch;margin:auto;
+  text-align:center;font-size:clamp(2.6rem,7vw,7.5rem);
+  font-weight:900;line-height:1.06;letter-spacing:-.045em;
+}
+.thesis-highlight{
+  position:relative;isolation:isolate;display:inline-block;
+  padding:.04em .15em .07em;color:#141414;
+  background:linear-gradient(155deg,var(--thesis-copper),#c5986f);
+  transform:rotate(-3deg);
+}
+.thesis-highlight::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:url("grano-malla.png") 0 0 / 260px repeat;
+  mix-blend-mode:soft-light;opacity:.62;
+}
+.thesis-highlight--coral{
+  background:linear-gradient(155deg,#f0a18b,var(--thesis-coral));transform:rotate(2deg);
+}
+.thesis-art{display:none}
+.thesis-reading{
+  padding:clamp(1.25rem,3.5svh,2.75rem) var(--edge) clamp(5rem,17svh,11rem);
+}
+.thesis-reading-copy{
+  max-width:28ch;margin:0 auto;
+  font-size:clamp(1.8rem,4.6vw,4.6rem);
+  font-weight:700;line-height:1.08;letter-spacing:-.035em;text-align:center;text-wrap:pretty;
+}
+.thesis-reading-copy strong{color:var(--thesis-copper);white-space:nowrap}
+.thesis-reading-copy .media-companies{color:var(--thesis-coral)}
+.thesis-reading-copy .demand{color:#c8e5f1}
+@media(prefers-reduced-motion:no-preference){
+  .thesis-reading-copy span{
+    opacity:calc(.36 + .64 * clamp(0,(var(--reading-progress,1) - var(--word-start)) * 8,1));
+  }
+}
+.thesis-details{background:var(--promise-gray);color:var(--ink)}
+.thesis-details .editorial-copy{margin-top:0}
+@media(prefers-reduced-motion:no-preference){
+  .capabilities.is-animated + .thesis.is-animated{
+    --handoff-height:100svh;
+    position:relative;margin-top:calc(-1 * var(--handoff-height));
+    background:linear-gradient(transparent var(--handoff-height),#000 var(--handoff-height));
+  }
+  .thesis.is-animated .thesis-track{min-height:275svh}
+  .thesis.is-animated .thesis-reading{position:relative;margin-top:-28svh}
+  .thesis.is-animated .thesis-frame{
+    position:sticky;top:0;min-height:100svh;overflow:hidden;
+  }
+  .thesis.is-animated .thesis-title{
+    width:max-content;max-width:none;margin:0;white-space:nowrap;text-align:left;
+    opacity:var(--thesis-entry,1);
+    transform:translate3d(var(--thesis-x,0px),0,0);
+  }
+  .thesis-highlight{
+    transform:translateY(calc((1 - var(--thesis-focus,1)) * .45em))
+      rotate(calc(-3deg - (1 - var(--thesis-focus,1)) * 9deg));
+  }
+  .thesis-highlight--coral{
+    transform:translateY(calc((1 - var(--thesis-focus,1)) * -.45em))
+      rotate(calc(2deg + (1 - var(--thesis-focus,1)) * 9deg));
+  }
+  .thesis.is-animated .thesis-art{
+    display:block;position:absolute;pointer-events:none;
+    opacity:var(--thesis-focus,0);
+    transform:translateY(calc((1 - var(--thesis-focus,0)) * 1.3em))
+      rotate(calc(var(--thesis-focus,0) * 24deg));
+  }
+  .thesis-art--arc{
+    left:45%;bottom:150%;width:.8em;aspect-ratio:1;border-radius:50%;
+    border:.14em solid var(--thesis-sage);border-right-color:transparent;
+  }
+  .thesis-art--diamond{
+    left:63%;top:152%;width:.46em;aspect-ratio:1;border-radius:.06em;
+    background:linear-gradient(135deg,var(--thesis-copper),var(--thesis-sage));
+    rotate:24deg;
+  }
+}
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid #263e4230;border-radius:1rem;overflow:hidden}
+.compare h3,.compare p{padding:1rem 1.2rem;margin:0}
+.compare h3{background:#edf0ec}
+.compare h3:nth-child(2),.compare-row p:nth-child(2){background:#c8d9d5}
+.compare-row{display:contents}
+.compare-row p{border-top:1px solid #263e4230}
+.diagnosis{background:#e8eeeb}
+.lenses{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;padding:0;list-style:none;margin:2rem 0}
+.lenses li,.map-card,.profiles article,.question-card{padding:clamp(1.05rem,2.5vw,1.8rem);border:1px solid #263e4230;background:#f8f7f0;border-radius:1rem}
+.lenses li,.map-card{transform:translateY(var(--panel-y,0px));opacity:var(--panel-opacity,1)}
+.priority{max-width:44rem;padding:1rem 1.5rem;background:#1e3942;color:white;border-radius:1rem}
+.priority a{text-decoration:underline}
+.map-section{background:#ede4d7}
+.map-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(2rem,7vw,6rem);align-items:start;margin-top:2rem}
+.map-anchor{position:sticky;top:6rem}
+.map-promise{font-size:clamp(1.4rem,2.7vw,2.2rem);font-weight:500;margin-top:0}
+.mini-map{text-align:center;padding:1.4rem;background:#e2d1bf;border-radius:1rem}
+.mini-map span{display:inline-block;padding:.45rem .65rem;border:1px solid #68452655;border-radius:.4rem}
+.mini-map i{display:block;width:1px;height:1.25rem;background:#684526;margin:auto}
+.mini-map>div{display:flex;justify-content:center;flex-wrap:wrap;gap:.35rem}
+.map-cards{display:grid;gap:.75rem}
+.profiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;margin-top:2rem}
+.closing{background:#d9e4e2}
+.question-card{max-width:38rem;margin-top:1.75rem}
+.question-card fieldset{border:0;padding:0;margin:0}
+.question-card legend{font-weight:700}
+.question-card label{display:flex;gap:.5rem;margin:.7rem 0}
+.question-number,.wireframe-note{font-size:.85rem;color:#435961}
+.faq details{border-bottom:1px solid #263e4230;padding:1rem 0}
+.faq details:first-of-type{margin-top:2rem}
+.faq summary{cursor:pointer;font-size:1.1rem;font-weight:500}
+.faq details p{max-width:50rem}
+@media(max-width:720px){
+ .lenses{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .profiles,.map-layout{grid-template-columns:1fr}
+ .map-anchor{position:static}
+ .compare h3,.compare p{padding:.75rem;font-size:.9rem}
+ .compare h3{font-size:1rem}
+}
+@media(max-width:420px){.lenses{grid-template-columns:1fr}}
+
+.mark .logo-phase{opacity:var(--halves-opacity,1)}
+.mark .source-gap{opacity:var(--bolt-focus,0);fill:#fff}
+
+.sky-journey{
+  --source-blue:#2396c8;
+  position:relative;isolation:isolate;color:#fff;
+  background:linear-gradient(160deg,#253f54,#172a3b 58%,#355b71);
+}
+.cielo .sky-journey > .backdrop{
+  position:sticky;inset:auto;top:0;height:100svh;margin-bottom:-100svh;
+  background:linear-gradient(170deg,#164c80,var(--source-blue) 66%,#70b9df);
+}
+.cloudscape{position:absolute;inset:0 -9%}
+.cloudscape::before,.cloudscape::after{
+  content:"";position:absolute;inset:0;
+  background:url("cielo-atmosferico.webp") var(--cloud-position,center) / cover no-repeat;
+}
+.cloudscape::after{opacity:0}
+.backdrop .cloudscape{
+  inset:-6svh -9% 6svh;
+  filter:saturate(1.13) brightness(.98);
+  mask-image:linear-gradient(#000 0 90%,transparent);
+}
+@media(prefers-reduced-motion:no-preference){
+  .cloudscape::before{animation:sky-drift 14s linear infinite}
+  .cloudscape::after{
+    animation:sky-drift 14s linear -7s infinite, sky-crossfade 14s linear -7s infinite;
+  }
+}
+.backdrop .source-sky{
+  position:absolute;inset:0;opacity:calc(.52 + .08 * var(--source-progress,0));
+  background:
+    radial-gradient(ellipse at 87% 3%,var(--source-blue),transparent 58%),
+    radial-gradient(ellipse at 6% 16%,#dceff2,transparent 65%),
+    radial-gradient(ellipse at 19% 97%,#f4f3ee,transparent 60%),
+    radial-gradient(ellipse at 97% 91%,#72919b,transparent 68%),
+    linear-gradient(160deg,#a9cfdc,#cae5e9);
+  mask-image:radial-gradient(ellipse at 50% 49%,#0006 0 21%,#000 71%);
+}
+@keyframes sky-drift{
+  from{transform:translateX(-7%)}
+  to{transform:translateX(7%)}
+}
+@keyframes sky-crossfade{
+  0%,18%,82%,100%{opacity:0}
+  44%,56%{opacity:1}
+}
+.cielo footer{
+  display:flex;align-items:end;min-height:clamp(12rem,28vw,24rem);
+  background:linear-gradient(transparent 35%,#122d28c9),var(--landscape-photo) center 95% / cover no-repeat #123755;
+}
+header .brand{color:#fff;text-shadow:0 1px 10px #132b4a70}
+.cielo .sky-journey .sky-texture{
+  z-index:0;
+  background:url("grano-malla.png") 0 0 / 400px repeat;
+  mix-blend-mode:overlay;opacity:.29;
+  mask:radial-gradient(ellipse at 50% 48%,#0008, #000 76%);
+}
+.capabilities-frame > .sky-texture{display:none}
+.capabilities.has-sky-grain .sky-texture{
+  display:block;z-index:0;
+  background:url("grano-malla.png") 0 0 / 400px repeat;
+  mix-blend-mode:overlay;opacity:.29;
+  mask:radial-gradient(ellipse at 50% 48%,#0008,#000 76%);
+}
+.promise-stage{
+  position:relative;z-index:2;display:grid;place-items:center;
+  min-height:75.2svh;
+  padding:clamp(4rem,9.6vw,8rem) var(--edge);
+  background:var(--promise-gray);color:#141414;
+}
+.promise-copy{
+  max-width:23ch;margin:0;text-align:center;text-wrap:balance;
+  font-size:clamp(1.65rem,4.1vw,3.85rem);line-height:1.08;
+  font-weight:700;letter-spacing:-.04em;
+}
+.promise-copy span{
+  font-family:"Neue Haas Grotesk","Helvetica Neue",Arial,sans-serif;font-weight:700;
+  opacity:calc(.28 + .72 * clamp(0,(var(--promise-progress,1) - var(--word-start)) * 8,1));
+}
+header.on-promise{background:var(--promise-gray);color:#141414}
+header.on-promise .brand{color:inherit;text-shadow:none}
+header.on-promise .nav-mark g{fill:currentColor}
+.feature-stage{
+  position:relative;z-index:3;isolation:isolate;color:#f3f0e7;
+  background:
+    radial-gradient(ellipse at 104% 100%,#7d9ba5 0%,#274c55 24%,transparent 60%),
+    linear-gradient(145deg,#080d11 18%,#0e242c 67%,#153e4b 96%,var(--source-blue));
+}
+.feature-frame{
+  display:grid;align-items:center;
+  padding:clamp(4rem,7.2svh,6.4rem) var(--edge);
+}
+.feature-list{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1.4rem,4vw,4rem);
+  width:min(100%,76rem);margin-inline:auto;
+}
+.feature{min-width:0;--scene-progress:1}
+.feature h2{font-size:clamp(1.75rem,3vw,3.25rem);margin:1.15rem 0 .55rem}
+.feature > p{font-size:clamp(1rem,1.35vw,1.18rem);line-height:1.4;margin:0;color:#e4e9e6;max-width:29ch}
+.feature-visual{
+  position:relative;isolation:isolate;aspect-ratio:1.14;
+  opacity:calc(.63 + .37 * var(--scene-focus,1));
+  transition:opacity .26s ease;
+}
+.feature-motion{
+  position:absolute;inset:4% 0;display:block;width:100%;height:92%;
+  object-fit:cover;border-radius:.85rem;
+  border:1px solid #dceff236;
+  opacity:calc(.2 + .42 * var(--scene-focus,1));
+  filter:saturate(.55) brightness(.76);
+  transition:opacity .3s ease;
+}
+.feature-motion--map{object-position:center 35%}
+.motion-card{
+  font-family:"Neue Haas Grotesk","Helvetica Neue",Arial,sans-serif;
+  position:absolute;display:flex;flex-direction:column;justify-content:space-between;
+  min-height:0;overflow:hidden;border:1px solid #f3f0e72e;border-radius:.8rem;
+  background:#22383e;color:#fbf9f1;
+  box-shadow:0 .95rem 1.8rem #04080960;
+  transform:
+    translate(calc(var(--shift-x,0px) * (1 - var(--scene-progress))),calc(var(--shift-y,0px) * (1 - var(--scene-progress))))
+    rotate(calc(var(--tilt,0deg) * (1 - var(--scene-progress))));
+}
+.motion-card strong{font-weight:700;font-size:clamp(.83rem,1.35vw,1.25rem);line-height:1.06;letter-spacing:-.015em}
+.motion-card small{font-weight:400;font-size:.7rem;line-height:1.2}
+.motion-card--photo,.motion-card--reel,.motion-card--youtube{
+  background-image:linear-gradient(0deg,#050a0ed9,transparent 72%),url("fundador-editorial.webp");
+  background-size:cover;background-position:62% 50%;
+}
+.motion-card--photo{
+  inset:9% 29% 18% 2%;padding:1rem;
+  --shift-x:14px;--shift-y:22px;--tilt:-9deg;
+}
+.motion-card--signals{
+  inset:35% 0 5% 28%;padding:clamp(.6rem,1.4vw,1rem);
+  background:#e6ebe7;color:#14262b;
+  --shift-x:-38px;--shift-y:-12px;--tilt:7deg;
+}
+.motion-card--signals span{display:block;padding:.45rem 0;border-top:1px solid #253c3935}
+.motion-card--notes{
+  inset:10% 1% auto auto;padding:.45rem .65rem;
+  background:#283e46;
+  --shift-x:-74px;--shift-y:26px;--tilt:8deg;
+}
+.motion-card--map-shadow{
+  inset:17% 15% 14% 8%;background:#825539;
+  --shift-x:18px;--shift-y:6px;--tilt:-13deg;
+}
+.motion-card--map{
+  inset:9% 5% 8% 14%;padding:clamp(.65rem,1.65vw,1.15rem);
+  background:linear-gradient(155deg,#efddc3,#d5b28d);color:#38271d;
+  --shift-x:-11px;--shift-y:9px;--tilt:7deg;
+}
+.map-branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.38rem;margin-top:.48rem}
+.map-branches span{padding:.3rem .35rem;border:1px solid #54392165;border-radius:.32rem;font-size:.69rem}
+.motion-card--carousel{
+  inset:8% 1% 39% 50%;padding:.62rem;
+  background:linear-gradient(145deg,#c5d9d5,#ebeee7);color:#142b30;
+  --shift-x:-54px;--shift-y:18px;--tilt:10deg;
+}
+.motion-card--reel{
+  inset:9% 62% 7% 1%;padding:.55rem;border-radius:1.1rem;
+  background-position:64% center;
+  --shift-x:29px;--shift-y:9px;--tilt:-12deg;
+}
+.motion-card--youtube{
+  inset:50% 0 2% 34%;padding:.52rem .62rem;
+  background-position:50% 52%;
+  --shift-x:-24px;--shift-y:-22px;--tilt:6deg;
+}
+.motion-card--youtube small::before{content:"▶";color:#ef5a53;margin-right:.35em}
+@media(prefers-reduced-motion:no-preference){
+  main{--capabilities-overlap:100svh}
+  .sky-journey{margin-bottom:calc(-1 * var(--capabilities-overlap))}
+  .layout-body{z-index:3}
+  .feature-stage::after{content:"";display:block;height:var(--capabilities-overlap)}
+  .feature-frame{position:sticky;top:min(0px,calc(100svh - var(--feature-frame-height,100svh)))}
+  .promise-stage{
+    --promise-hold:clamp(6rem,30svh,16rem);
+    position:sticky;top:0;
+    margin-bottom:var(--promise-hold);
+    box-shadow:0 var(--promise-hold) 0 var(--promise-gray);
+  }
+}
+@media(min-width:801px) and (min-height:560px) and (prefers-reduced-motion:no-preference){
+  .feature-stage{min-height:calc(184svh + var(--capabilities-overlap))}
+  .feature-frame{top:clamp(4.75rem,13svh,8rem);min-height:80svh}
+}
+@media(max-width:800px){
+  .feature-list{grid-template-columns:1fr;gap:2.85rem;max-width:25rem}
+  .feature-visual{aspect-ratio:1.28}
+  .motion-card strong{font-size:clamp(1rem,3.7vw,1.25rem)}
+}
+@media(max-width:650px){
+  .backdrop .cloudscape{--cloud-position:74% center}
+}
+@media(prefers-reduced-motion:reduce){
+  .runway{--intro-height:100svh;--section-overlap:0px}
+  .feature-motion{visibility:hidden}
+}
+</style>
+<noscript><style>.runway{--intro-height:100svh;--section-overlap:0px}.mark{transform:translate(-50%,-50%) translateY(-29svh) scale(.25)}.message[data-waiting]{opacity:1;visibility:visible}.scroll-cue{display:none}</style></noscript>
+</head>
+<body class="cielo">
+<header><a class="brand" href="#inicio">realsource.</a><a class="nav-mark" href="#inicio" aria-label="Volver al inicio"><svg viewBox="866 364 188 188" aria-hidden="true">
+
+<g fill="#fff"><path  d="M 960 376.308594 C 959.875 376.308594 959.75 376.3125 959.625 376.3125 C 930.65625 376.445312 905.261719 391.6875 890.914062 414.566406 C 890.261719 415.605469 890.273438 416.933594 890.945312 417.957031 C 904.925781 439.316406 929.0625 453.429688 956.492188 453.429688 L 956.871094 453.429688 C 958.597656 453.429688 960 452.027344 960 450.300781 L 960 407.398438 C 960 404 964.648438 403.039062 965.996094 406.15625 C 978.011719 433.96875 1005.683594 453.429688 1037.902344 453.429688 L 1038.003906 453.429688 C 1039.847656 453.429688 1041.296875 451.84375 1041.121094 450.007812 C 1037.199219 408.65625 1002.378906 376.308594 960 376.308594"/><path  d="M 963.199219 462.175781 L 963.128906 462.175781 C 961.402344 462.175781 960 463.574219 960 465.304688 L 960 508.171875 C 960 511.566406 955.351562 512.53125 954.003906 509.414062 C 941.984375 481.621094 914.320312 462.175781 882.109375 462.175781 L 881.996094 462.175781 C 880.152344 462.175781 878.703125 463.761719 878.875 465.597656 C 882.800781 506.945312 917.621094 539.292969 960 539.292969 C 960.128906 539.292969 960.257812 539.289062 960.390625 539.289062 C 989.246094 539.152344 1014.558594 524.019531 1028.929688 501.28125 C 1029.585938 500.246094 1029.578125 498.921875 1028.910156 497.894531 C 1014.957031 476.394531 990.738281 462.175781 963.199219 462.175781 "/>
+</g></svg></a><a class="nav-link" href="#real-map">Conocé real map <span aria-hidden="true">↗</span></a></header>
+<main id="inicio">
+<div class="sky-journey">
+<div class="backdrop" aria-hidden="true">
+  <div class="cloudscape"></div>
+  <div class="source-sky"></div>
+  <div class="sky-texture"></div>
+</div>
+<section class="runway" aria-labelledby="title">
+  <div class="scene">
+
+
+    <div class="mark" aria-hidden="true"><svg viewBox="866 364 188 188" aria-hidden="true">
+<defs><mask id="rayo-mask" maskUnits="userSpaceOnUse" x="600" y="340" width="700" height="240"><rect x="600" y="340" width="700" height="240" fill="#fff"/>
+<polygon class="bolt" points="600,350 884,350 872,438 894,450 876,566 600,566" fill="#000"/></mask>
+<mask id="source-gap-mask" maskUnits="userSpaceOnUse" x="866" y="364" width="188" height="188">
+<circle cx="960" cy="457.8" r="72" fill="#fff"/>
+<path d="M 960 376.308594 C 959.875 376.308594 959.75 376.3125 959.625 376.3125 C 930.65625 376.445312 905.261719 391.6875 890.914062 414.566406 C 890.261719 415.605469 890.273438 416.933594 890.945312 417.957031 C 904.925781 439.316406 929.0625 453.429688 956.492188 453.429688 L 956.871094 453.429688 C 958.597656 453.429688 960 452.027344 960 450.300781 L 960 407.398438 C 960 404 964.648438 403.039062 965.996094 406.15625 C 978.011719 433.96875 1005.683594 453.429688 1037.902344 453.429688 L 1038.003906 453.429688 C 1039.847656 453.429688 1041.296875 451.84375 1041.121094 450.007812 C 1037.199219 408.65625 1002.378906 376.308594 960 376.308594" fill="#000"/><path d="M 963.199219 462.175781 L 963.128906 462.175781 C 961.402344 462.175781 960 463.574219 960 465.304688 L 960 508.171875 C 960 511.566406 955.351562 512.53125 954.003906 509.414062 C 941.984375 481.621094 914.320312 462.175781 882.109375 462.175781 L 881.996094 462.175781 C 880.152344 462.175781 878.703125 463.761719 878.875 465.597656 C 882.800781 506.945312 917.621094 539.292969 960 539.292969 C 960.128906 539.292969 960.257812 539.289062 960.390625 539.289062 C 989.246094 539.152344 1014.558594 524.019531 1028.929688 501.28125 C 1029.585938 500.246094 1029.578125 498.921875 1028.910156 497.894531 C 1014.957031 476.394531 990.738281 462.175781 963.199219 462.175781 " fill="#000"/>
+</mask></defs>
+<g class="logo-phase"><g class="logo"><path class="half top" d="M 960 376.308594 C 959.875 376.308594 959.75 376.3125 959.625 376.3125 C 930.65625 376.445312 905.261719 391.6875 890.914062 414.566406 C 890.261719 415.605469 890.273438 416.933594 890.945312 417.957031 C 904.925781 439.316406 929.0625 453.429688 956.492188 453.429688 L 956.871094 453.429688 C 958.597656 453.429688 960 452.027344 960 450.300781 L 960 407.398438 C 960 404 964.648438 403.039062 965.996094 406.15625 C 978.011719 433.96875 1005.683594 453.429688 1037.902344 453.429688 L 1038.003906 453.429688 C 1039.847656 453.429688 1041.296875 451.84375 1041.121094 450.007812 C 1037.199219 408.65625 1002.378906 376.308594 960 376.308594"/><path class="half bot" d="M 963.199219 462.175781 L 963.128906 462.175781 C 961.402344 462.175781 960 463.574219 960 465.304688 L 960 508.171875 C 960 511.566406 955.351562 512.53125 954.003906 509.414062 C 941.984375 481.621094 914.320312 462.175781 882.109375 462.175781 L 881.996094 462.175781 C 880.152344 462.175781 878.703125 463.761719 878.875 465.597656 C 882.800781 506.945312 917.621094 539.292969 960 539.292969 C 960.128906 539.292969 960.257812 539.289062 960.390625 539.289062 C 989.246094 539.152344 1014.558594 524.019531 1028.929688 501.28125 C 1029.585938 500.246094 1029.578125 498.921875 1028.910156 497.894531 C 1014.957031 476.394531 990.738281 462.175781 963.199219 462.175781 "/>
+<circle class="cover" cx="960" cy="457.8" r="81.8" mask="url(#rayo-mask)"/></g>
+</g>
+<rect class="source-gap" x="866" y="364" width="188" height="188" mask="url(#source-gap-mask)"/>
+</svg></div>
+    <div class="message" data-waiting>
+      <h1 id="title">Dale dirección<br>a tu marca.</h1>
+      <p class="eyebrow">CONSULTORA DE MARCA Y CRECIMIENTO.</p>
+    </div>
+    <a class="scroll-cue" href="#promesa">Explorá <span aria-hidden="true">↓</span></a>
+  </div>
+</section>
+<section class="promise-stage" id="promesa" aria-label="Nuestra promesa">
+  <p class="promise-copy">Ayudamos a marcas que están por salir al mercado y a empresas que ya están creciendo a definir qué decir, a quién y cómo distribuirlo para construir demanda.</p>
+</section>
+<section class="feature-stage" id="como-trabajamos" aria-label="Cómo trabajamos">
+  <div class="feature-frame">
+    <div class="feature-list">
+      <article class="feature">
+        <div class="feature-visual" aria-hidden="true">
+          <video class="feature-motion" src="motion-diagnostico.mp4" muted playsinline loop preload="metadata" tabindex="-1" disablepictureinpicture></video>
+          <div class="motion-card motion-card--photo"><small>YouTube</small><strong>Contenido actual</strong></div>
+          <div class="motion-card motion-card--notes"><small>Instagram · Comentarios</small></div>
+          <div class="motion-card motion-card--signals">
+            <small>Señales del público</small>
+            <strong>¿Por qué nos eligen?</strong>
+            <span><small>Lo que valoran los clientes</small></span>
+          </div>
+        </div>
+        <h2>Diagnóstico</h2>
+        <p>Miramos tu negocio, tu público y tu mercado para entender qué hace que te elijan.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-visual" aria-hidden="true">
+          <video class="feature-motion feature-motion--map" src="motion-mapa.mp4" muted playsinline loop preload="metadata" tabindex="-1" disablepictureinpicture></video>
+          <div class="motion-card motion-card--map-shadow"></div>
+          <div class="motion-card motion-card--map">
+            <small>Mapa de marca</small>
+            <strong>Mostrá cómo resolvés su problema.</strong>
+            <div class="map-branches"><span>Público</span><span>Promesa</span><span>Canales</span><span>Medición</span></div>
+          </div>
+        </div>
+        <h2>real map</h2>
+        <p>Convertimos lo que aprendimos en una dirección clara para tu equipo: qué comunicar, dónde y cómo medirlo.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-visual" aria-hidden="true">
+          <video class="feature-motion" src="motion-ejecucion.mp4" muted playsinline loop preload="metadata" tabindex="-1" disablepictureinpicture></video>
+          <div class="motion-card motion-card--reel"><small>Instagram · Reel</small><strong>¿Por dónde empezar?</strong></div>
+          <div class="motion-card motion-card--carousel"><small>Instagram · Carrusel</small><strong>3 pasos para resolverlo.</strong></div>
+          <div class="motion-card motion-card--youtube"><small>YouTube</small><strong>Cómo lo hacemos.</strong></div>
+        </div>
+        <h2>Ejecución</h2>
+        <p>Una idea del mapa se vuelve un reel, un carrusel y un video de YouTube, si necesitás apoyo para ejecutarla.</p>
+      </article>
+    </div>
+  </div>
+</section>
+</div>
+<div class="layout-body"><section class="capabilities has-sky-grain" id="capacidades" aria-label="Áreas de trabajo">
+  <div class="capabilities-frame">
+    <div class="cloudscape" aria-hidden="true"></div>
+    <div class="sky-texture" aria-hidden="true"></div>
+    <ul class="capability-list">
+      <li>
+        <h2>Posicionamiento de marca</h2>
+        <p>Definimos a quién le hablás, qué lugar querés ocupar en el mercado y por qué deberían elegirte.</p>
+      </li>
+      <li>
+        <h2>Distribución orgánica</h2>
+        <p>Diseñamos cómo hacer llegar tu mensaje a las personas correctas con contenido y canales que tu equipo puede sostener.</p>
+      </li>
+      <li>
+        <h2>Plan de adquisición</h2>
+        <p>Ordenamos el recorrido desde el primer contacto hasta la compra y definimos qué campañas y canales ayudan en cada paso.</p>
+      </li>
+      <li>
+        <h2 class="capability-zoom-title"><span class="capability-zoom-word">Crecimie<span class="capability-zoom-guide">n</span>t<span class="capability-zoom-letter"><span class="capability-zoom-letter-text">o</span><svg viewBox="0 -525 584 541" aria-hidden="true" focusable="false"><path class="capability-zoom-counter" fill="#000" stroke="#000" stroke-width="4" d="M291 -110C233 -110 205 -168 205 -254C205 -340 233 -398 291 -398C349 -398 379 -340 379 -254C379 -168 349 -110 291 -110Z"/><path fill="currentColor" fill-rule="evenodd" d="M293 16C463 16 571 -99 571 -254C571 -409 463 -525 293 -525C123 -525 13 -409 13 -254C13 -99 123 16 293 16ZM291 -110C233 -110 205 -168 205 -254C205 -340 233 -398 291 -398C349 -398 379 -340 379 -254C379 -168 349 -110 291 -110Z"/></svg></span></span> con previsibilidad</h2>
+        <p>Definimos qué medir, qué probar y cuándo ajustar para que tu equipo tome decisiones con datos.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+<section class="thesis" id="tesis" aria-labelledby="tesis-title">
+  <div class="thesis-track">
+    <div class="thesis-frame">
+      <h2 class="thesis-title" id="tesis-title">
+        Las empresas que escalan construyen <span class="thesis-highlight">marca</span> y <span class="thesis-highlight thesis-highlight--coral">distribución</span> al mismo tiempo.<span class="thesis-art thesis-art--arc" aria-hidden="true"></span><span class="thesis-art thesis-art--diamond" aria-hidden="true"></span>
+      </h2>
+    </div>
+  </div>
+  <div class="thesis-reading">
+    <p class="thesis-reading-copy">Una marca fuerte necesita <strong>un mensaje</strong> que la gente pueda reconocer y canales que lo hagan llegar a las personas correctas. Así operan las nuevas <strong class="media-companies">media companies</strong>: desarrollan una voz propia, publican con una línea editorial y construyen una relación directa con su audiencia. Esa relación ayuda a <strong class="demand">generar demanda</strong> y entender qué mueve a las personas a comprar.</p>
+  </div>
+  <div class="layout-section thesis-details"><div class="layout-wrap"><div class="editorial-copy"><p><strong>real map es el método para llevar esa forma de trabajar a tu empresa.</strong></p></div><div class="compare"><h3>Marketing por impulso</h3><h3>Una marca que opera como media company</h3><div class="compare-row"><p>Cada campaña arranca con un mensaje distinto.</p><p>El posicionamiento orienta qué se dice y qué se repite.</p></div><div class="compare-row"><p>La pauta concentra la llegada a nuevos clientes.</p><p>Contenido, canales propios y pauta cumplen funciones complementarias.</p></div><div class="compare-row"><p>Se eligen formatos por tendencia o urgencia.</p><p>Cada formato responde a una intención editorial y comercial.</p></div><div class="compare-row"><p>Se mide alcance sin saber qué aporta al negocio.</p><p>Se mide qué genera atención, demanda y oportunidades de venta.</p></div></div></div></div></section>
+<section class="layout-section diagnosis" id="diagnostico" aria-labelledby="diagnostico-title"><div class="layout-wrap"><h2 id="diagnostico-title">Antes de decidir qué publicar, entendamos qué necesita resolver tu marca.</h2><p>Empezamos cruzando cuatro miradas:</p><ol class="lenses"><li><h3>La empresa</h3><p>Qué la hace distinta, qué fortalezas puede demostrar, qué límites tiene y cómo la perciben otros.</p></li><li><h3>El público</h3><p>Qué problema intenta resolver, qué desea, qué rechaza y qué lo lleva a elegir.</p></li><li><h3>El mercado</h3><p>Contra qué marcas y alternativas compite, y qué ventajas o desventajas ve el público en cada una.</p></li><li><h3>El mundo</h3><p>Qué tendencias y cambios afectan a la empresa, a su categoría y a sus clientes.</p></li></ol><div class="priority"><p>Al cruzar esas miradas, identificamos qué conviene potenciar, qué está frenando la comunicación y qué decisión vale la pena tomar primero. Esa prioridad orienta el mapa.</p><a href="#real-map">Ver cómo se arma el mapa ↓</a></div></div></section><section class="layout-section map-section" id="real-map" aria-labelledby="real-map-title"><div class="layout-wrap"><h2 id="real-map-title">real map</h2><div class="map-layout"><div class="map-anchor"><p class="map-promise">Un mapa para que tu equipo sepa qué construir, dónde distribuirlo y cómo medirlo.</p><div class="mini-map" aria-hidden="true"><span>Prioridad</span><i></i><div><span>Marca</span><span>Canales</span><span>Formatos</span></div></div></div><div class="map-cards"><article class="map-card"><h3><strong>Estrategia de marca</strong></h3><p>A quién nos dirigimos, qué lugar queremos ocupar y qué promesa y narrativa vamos a sostener. Incluye criterios de identidad visual, verbal y sonora.</p></article><article class="map-card"><h3><strong>Estrategia de adquisición</strong></h3><p>Cómo vamos a generar demanda y conectar el descubrimiento de la marca con una oportunidad comercial.</p></article><article class="map-card"><h3><strong>Plan táctico de canales</strong></h3><p>Qué función cumple cada canal, qué objetivo tiene y cómo sabremos si está aportando.</p></article><article class="map-card"><h3><strong>Plan y formatos para redes</strong></h3><p>Qué temas podemos sostener, en qué formatos y qué primeras pruebas conviene hacer.</p></article><article class="map-card"><h3><strong>Entrenamiento online</strong></h3><p>Cómo transferir el criterio al equipo para que pueda aplicar el mapa y revisar sus decisiones.</p></article><article class="map-card"><h3><strong>Brand book opcional</strong></h3><p>Cuando el proyecto lo requiere, convertir las decisiones de identidad en una guía de uso para el equipo.</p></article><p>El mapa incluye criterios para sostener la dirección: qué tiene que mantenerse reconocible, qué se puede probar y qué indicadores se revisan. Si el equipo necesita apoyo para ejecutar, real content y real growth pueden ser una etapa posterior.</p></div></div></div></section><section class="layout-section audience" id="para-quien" aria-labelledby="para-quien-title"><div class="layout-wrap"><h2 id="para-quien-title">Para quién es</h2><p>Para marcas que están por lanzarse y para equipos que necesitan ordenar cómo comunican y distribuyen.</p><div class="profiles"><article><h3>Founders que están lanzando una marca</h3><p>Querés salir al mercado con una promesa clara, un plan de canales y acuerdos sobre quién decide, qué tiene que mantenerse coherente y cómo revisar lo que funciona. Eso es gobernabilidad de marca desde el primer día.</p></article><article><h3>Founders, dueños y socios de empresas en marcha</h3><p>La oferta funciona y querés que la marca crezca con un mensaje claro, sin tener que redefinirlo en cada campaña.</p></article><article><h3>Líderes de marketing o ventas</h3><p>Tenés un equipo que ejecuta y necesitás alinear prioridades, canales y métricas con una misma dirección.</p></article></div></div></section><section class="layout-section closing" id="empezar" aria-labelledby="empezar-title"><div class="layout-wrap"><h2 id="empezar-title">Empezá por el diagnóstico.</h2><p>Respondé tres preguntas sobre tu marca, tu prioridad y tu equipo. Vas a recibir una orientación inicial y podés dejar tu email para conversar.</p><div class="question-card"><p class="question-number">Pregunta 1 de 3</p><fieldset><legend>¿En qué momento está tu marca?</legend><label><input type="radio" name="stage"> Estoy preparando el lanzamiento</label><label><input type="radio" name="stage"> Mi empresa ya está en marcha</label></fieldset><p class="wireframe-note">Vista previa del primer paso</p></div></div></section><section class="layout-section faq" id="dudas" aria-labelledby="dudas-title"><div class="layout-wrap"><h2 id="dudas-title">Sacá tus dudas</h2><details><summary>¿Para quién es real map?</summary><p>Para founders que están preparando un lanzamiento y para empresas en marcha que quieren ordenar su posicionamiento, comunicación y distribución.</p></details><details><summary>¿Puedo hacer real map antes de lanzar?</summary><p>Sí. Trabajamos con lo que ya sabés de tu oferta, tu público y el mercado. El mapa deja una dirección para el lanzamiento, define qué supuestos conviene probar y establece cómo va a tomar decisiones el equipo desde el primer día.</p></details><details><summary>¿Qué diferencia hay entre el cuestionario y el diagnóstico?</summary><p>El cuestionario te da una primera orientación. El diagnóstico es la primera etapa de real map: analiza la empresa, el público, el mercado y el contexto para definir prioridades.</p></details><details><summary>¿Qué me llevo al terminar?</summary><p>Un mapa que reúne la dirección de marca, el rol de los canales, prioridades de contenido y criterios para medir y sostener el trabajo.</p></details><details><summary>¿Tengo que contratar la ejecución?</summary><p>Podés trabajar solo el mapa. Si necesitás apoyo después, evaluamos qué parte conviene acompañar con real content o real growth.</p></details><details><summary>¿El brand book está incluido?</summary><p>El mapa reúne criterios de identidad. El brand book completo se puede sumar según el alcance del proyecto.</p></details></div></section></div>
+</main>
+<footer><a href="#inicio">realsource. ↑</a></footer>
+<script>
+const runway = document.querySelector('.runway');
+const scene = document.querySelector('.scene');
+const message = document.querySelector('.message');
+const cue = document.querySelector('.scroll-cue');
+const header = document.querySelector('header');
+const skyJourney = document.querySelector('.sky-journey');
+const promiseStage = document.querySelector('.promise-stage');
+const promiseCopy = document.querySelector('.promise-copy');
+const mark = document.querySelector('.mark');
+const navMark = document.querySelector('.nav-mark');
+const panels = [...document.querySelectorAll('.lenses li, .map-card')];
+const featureStage = document.querySelector('.feature-stage');
+const capabilities = document.querySelector('.capabilities');
+const capabilitiesFrame = capabilities.querySelector('.capabilities-frame');
+const capabilityTitles = [...capabilities.querySelectorAll('li')];
+const zoomCard = capabilityTitles.at(-1);
+const zoomTitle = zoomCard.querySelector('h2');
+const zoomGuide = zoomTitle.querySelector('.capability-zoom-guide');
+const zoomLetter = zoomTitle.querySelector('.capability-zoom-letter');
+const thesis = document.querySelector('.thesis');
+const thesisTrack = thesis.querySelector('.thesis-track');
+const thesisFrame = thesis.querySelector('.thesis-frame');
+const thesisTitle = thesis.querySelector('.thesis-title');
+const thesisReading = thesis.querySelector('.thesis-reading');
+const thesisReadingCopy = thesisReading.querySelector('.thesis-reading-copy');
+const featureFrame = document.querySelector('.feature-frame');
+const features = [...featureFrame.querySelectorAll('.feature')];
+const featureClips = features.map(feature => feature.querySelector('.feature-motion'));
+const pinnedFeatures = matchMedia('(min-width: 801px) and (min-height: 560px)');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const clamp = value => Math.min(1, Math.max(0, value));
+const ease = value => value * value * (3 - 2 * value);
+let frame = 0;
+capabilities.classList.add('is-animated');
+thesis.classList.add('is-animated');
+document.fonts.ready.then(schedule);
+const frameObserver = new ResizeObserver(() => {
+  featureFrame.style.setProperty('--feature-frame-height', featureFrame.offsetHeight + 'px');
+  thesis.style.setProperty('--handoff-height', capabilitiesFrame.offsetHeight + 'px');
+  schedule();
+});
+frameObserver.observe(featureFrame);
+frameObserver.observe(capabilitiesFrame);
+
+prepareWords(promiseCopy);
+prepareWords(thesisReadingCopy);
+
+function prepareWords(copy) {
+  const walker = document.createTreeWalker(copy, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+  const wordCount = textNodes.reduce((total, node) =>
+    total + (node.data.match(/\S+/g)?.length ?? 0), 0);
+  let index = 0;
+  for (const node of textNodes) {
+    node.replaceWith(...node.data.split(/(\s+)/).filter(Boolean).map(piece => {
+      if (/^\s+$/.test(piece)) return piece;
+      const word = document.createElement('span');
+      word.textContent = piece;
+      word.style.setProperty('--word-start', .875 * index / Math.max(1, wordCount - 1));
+      index += 1;
+      return word;
+    }));
+  }
+}
+
+function introDistance(viewport) {
+  const promiseHold = parseFloat(getComputedStyle(promiseStage).marginBottom);
+  const promiseStart = featureStage.offsetTop - promiseStage.offsetHeight - promiseHold;
+  return Math.max(1, promiseStart - runway.offsetTop - viewport);
+}
+
+function render() {
+  frame = 0;
+  const viewport = scene.offsetHeight;
+  const distance = introDistance(viewport);
+  const scrolled = -runway.getBoundingClientRect().top;
+  const progress = clamp(scrolled / distance);
+  const reduced = reducedMotion.matches;
+  const dock = ease(clamp((progress - .25) / .65));
+  const turnIn = ease(clamp(progress / .26));
+  const turnOut = ease(clamp((progress - .52) / .38));
+  const turn = 90 * turnIn + 270 * turnOut;
+  const boltIn = ease(clamp((progress - .19) / .07));
+  const restore = ease(clamp((progress - .56) / .17));
+  const boltFocus = reduced ? 0 : boltIn * (1 - restore);
+  const halvesOut = ease(clamp((progress - .14) / .10));
+  const halvesOpacity = reduced ? 1 : 1 - halvesOut * (1 - restore);
+  const reveal = reduced ? 1 : ease(clamp((progress - .63) / .28));
+  const promiseBounds = promiseStage.getBoundingClientRect();
+  const coverage = clamp(1 - promiseBounds.top / viewport);
+  const titleOpacity = reveal * (reduced ? 1 : 1 - ease(clamp(coverage / .62)));
+  const promiseCopyOffset = promiseCopy.getBoundingClientRect().top - promiseBounds.top;
+  const promiseTopInFlow = distance + viewport - scrolled + promiseCopyOffset;
+  const promiseProgress = reduced ? 1 : clamp((viewport * .92 - promiseTopInFlow) / (viewport * .68));
+  promiseCopy.style.setProperty('--promise-progress', promiseProgress);
+  scene.style.setProperty('--mark-turn', turn + 'deg');
+  scene.style.setProperty('--bolt-focus', boltFocus);
+  scene.style.setProperty('--halves-opacity', halvesOpacity);
+  const navBounds = navMark.getBoundingClientRect();
+  const markSize = mark.offsetWidth || navBounds.width;
+  const startScale = Math.min(scene.clientWidth * .65, viewport * .57) / markSize;
+  const startY = viewport * .58 - markSize / 2;
+  const targetX = navBounds.left + navBounds.width / 2 - scene.clientWidth / 2;
+  const crossfade = reduced ? 1 : ease(clamp((progress - .89) / .06));
+  scene.style.setProperty('--mark-scale', startScale + (1 - startScale) * dock);
+  scene.style.setProperty('--mark-y', (startY + (navBounds.top - startY) * dock) + 'px');
+  mark.style.left = `calc(50% + ${targetX * dock}px)`;
+  scene.style.setProperty('--mark-opacity', 1 - crossfade);
+  header.style.setProperty('--nav-opacity', crossfade);
+  header.classList.toggle('docked', crossfade > 0);
+  const sourceProgress = reduced ? 1 : ease(clamp((progress - .45) / .35));
+  skyJourney.style.setProperty('--source-progress', sourceProgress);
+  scene.style.setProperty('--message-opacity', titleOpacity);
+  message.toggleAttribute('data-waiting', titleOpacity < .08);
+  cue.hidden = progress > .14;
+  const headerMidpoint = header.offsetHeight / 2;
+  const featureBounds = featureStage.getBoundingClientRect();
+  header.classList.toggle('on-promise', promiseBounds.top <= headerMidpoint && promiseBounds.bottom > headerMidpoint && featureBounds.top > headerMidpoint);
+  const capabilitiesBounds = capabilities.getBoundingClientRect();
+  const overCapabilities = capabilitiesBounds.top <= headerMidpoint && capabilitiesBounds.bottom > headerMidpoint;
+  header.classList.toggle('solid', skyJourney.getBoundingClientRect().bottom < header.offsetHeight && !overCapabilities);
+  const capabilityZoom = renderCapabilities(capabilitiesBounds, reduced);
+  const thesisBounds = thesisTrack.getBoundingClientRect();
+  const readingEnd = thesisReading.getBoundingClientRect().bottom;
+  header.classList.toggle('on-thesis', (overCapabilities && capabilityZoom > .9) ||
+    (thesisBounds.top <= headerMidpoint && readingEnd > headerMidpoint));
+  const thesisEntry = reduced ? 1 : ease(clamp((capabilityZoom - .96) / .04));
+  thesisTitle.style.setProperty('--thesis-entry', thesisEntry);
+  renderThesis(thesisBounds, reduced);
+  const reading = thesisReadingCopy.getBoundingClientRect();
+  const readingProgress = reduced ? 1 : clamp((innerHeight * .85 - reading.top) /
+    Math.max(1, reading.height + innerHeight * .24));
+  thesisReadingCopy.style.setProperty('--reading-progress', readingProgress);
+  renderFeatures(window.innerHeight, reduced, featureBounds, capabilitiesBounds.top);
+  panels.forEach(panel => {
+    const panelTop = panel.getBoundingClientRect().top - (parseFloat(panel.style.getPropertyValue('--panel-y')) || 0);
+    const entry = reduced ? 1 : ease(clamp((innerHeight - panelTop) / (innerHeight * .53)));
+    panel.style.setProperty('--panel-y', (1 - entry) * 24 + 'px');
+    panel.style.setProperty('--panel-tilt', (1 - entry) * 13 + 'deg');
+    panel.style.setProperty('--panel-opacity', .25 + entry * .75);
+  });
+}
+
+function renderFeatures(viewport, reduced, bounds, nextTop) {
+  const travel = Math.max(1, nextTop - bounds.top - featureFrame.offsetHeight);
+  const visible = bounds.top < viewport && bounds.bottom > 0 && nextTop > 0;
+  const journey = features.length * clamp((viewport * .39 - bounds.top) / (travel + viewport * .28));
+  const active = Math.min(features.length - 1, Math.floor(journey));
+
+  features.forEach((feature, index) => {
+    const entering = ease(clamp((viewport * .93 - feature.getBoundingClientRect().top) / (viewport * .48)));
+    const focus = reduced || !pinnedFeatures.matches || index === active;
+    const progress = reduced ? 1 : pinnedFeatures.matches
+      ? (focus ? .24 + .76 * ease(clamp((journey - index) * 1.65)) : .24)
+      : entering;
+    feature.style.setProperty('--scene-focus', focus ? 1 : 0);
+    feature.style.setProperty('--scene-progress', progress);
+
+    const clip = featureClips[index];
+    const shouldPlay = !reduced && !document.hidden && visible && focus && (pinnedFeatures.matches || entering > .5);
+    if (clip.hasAttribute('data-playing') !== shouldPlay) {
+      clip.toggleAttribute('data-playing', shouldPlay);
+      if (shouldPlay) clip.play().catch(() => {});
+      else clip.pause();
+    }
+  });
+}
+
+function renderCapabilities(bounds, reduced) {
+  if (reduced || bounds.top > innerHeight) return 0;
+  if (bounds.bottom < 0) return 1;
+  const height = capabilitiesFrame.offsetHeight;
+  const travel = Math.max(1, capabilities.offsetHeight - height);
+  const zoomTravel = height * 1.15;
+  const titleTravel = Math.max(1, travel - zoomTravel);
+  const lastTitle = capabilityTitles.length - 1;
+  const timeline = Math.min(lastTitle, clamp(-bounds.top / titleTravel) * (lastTitle + .55));
+  const chapter = Math.floor(timeline);
+  const transition = ease(clamp((timeline - chapter - .30) / .70));
+  const position = chapter + transition;
+
+  capabilityTitles.forEach((title, index) => {
+    const distance = index - position;
+    title.style.setProperty('--capability-shift', Math.max(-1, Math.min(1, distance)));
+    title.style.setProperty('--capability-opacity', 1 - clamp(Math.abs(distance)));
+  });
+
+  const zoom = clamp((-bounds.top - titleTravel) / zoomTravel);
+  const magnification = ease(zoom);
+  const focus = ease(clamp(zoom / .61));
+  // El centro del hueco se mide en el viewBox de la «o».
+  const letterX = zoomLetter.offsetLeft + zoomLetter.offsetWidth * (291 / 584);
+  const letterY = zoomLetter.offsetTop + zoomLetter.offsetHeight * (271 / 541);
+  const originX = zoomTitle.offsetLeft + letterX;
+  const originY = zoomTitle.offsetTop + letterY;
+  const frameBounds = capabilitiesFrame.getBoundingClientRect();
+  const listBounds = zoomCard.parentElement.getBoundingClientRect();
+  const pivotX = listBounds.left + zoomCard.offsetLeft + originX;
+  const pivotY = listBounds.top + zoomCard.offsetTop + originY;
+  const moveX = focus * (frameBounds.left + frameBounds.width / 2 - pivotX);
+  const moveY = focus * (frameBounds.top + frameBounds.height / 2 - pivotY);
+  const counterWidth = Math.max(1, zoomLetter.offsetWidth * (174 / 584));
+  const nearScale = Math.max(12, .92 * frameBounds.width / counterWidth);
+  const scale = Math.pow(nearScale, magnification / ease(.85));
+  const guideX = zoomGuide.offsetLeft + zoomGuide.offsetWidth / 2;
+  const guideOnScreen = pivotX + moveX + (guideX - letterX) * scale;
+  const guideExit = clamp((frameBounds.left - guideOnScreen) / frameBounds.width);
+  const fade = ease(guideExit) * ease(clamp((zoom - .30) / .64));
+
+  zoomCard.style.setProperty('--zoom-origin-x', originX + 'px');
+  zoomCard.style.setProperty('--zoom-origin-y', originY + 'px');
+  zoomCard.style.setProperty('--zoom-x', moveX + 'px');
+  zoomCard.style.setProperty('--zoom-y', moveY + 'px');
+  zoomCard.style.setProperty('--zoom-scale', scale);
+  zoomCard.style.setProperty('--zoom-counter', fade);
+  capabilitiesFrame.style.setProperty('--capability-black', fade);
+  return zoom;
+}
+
+function renderThesis(bounds, reduced) {
+  if (reduced || bounds.top > innerHeight || bounds.bottom < 0) return;
+  const progress = clamp(-bounds.top / Math.max(1, bounds.height - thesisFrame.offsetHeight));
+  const edge = parseFloat(getComputedStyle(thesisFrame).paddingLeft);
+  const travel = Math.max(0, thesisTitle.offsetWidth - thesisFrame.clientWidth + 2 * edge);
+  const leadIn = Math.max(0, thesisFrame.clientWidth * .46 - edge);
+  thesisTitle.style.setProperty('--thesis-x', (leadIn - (leadIn + travel) * progress) + 'px');
+  const highlight = ease(clamp((progress - .24) / .23)) * (1 - ease(clamp((progress - .77) / .21)));
+  thesisTitle.style.setProperty('--thesis-focus', highlight);
+}
+
+function schedule() {
+  if (!frame) frame = requestAnimationFrame(render);
+}
+cue.addEventListener('click', event => {
+  event.preventDefault();
+  window.scrollTo({ top: window.scrollY + runway.getBoundingClientRect().top + introDistance(scene.offsetHeight) * .98, behavior: 'smooth' });
+});
+addEventListener('scroll', schedule, { passive: true });
+addEventListener('resize', schedule);
+document.addEventListener('visibilitychange', schedule);
+reducedMotion.addEventListener('change', schedule);
+render();
+</script>
+</body>
+</html>

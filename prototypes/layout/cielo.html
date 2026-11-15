@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>realsource — Consultora de marca y crecimiento</title>
+<style>
+:root{--landscape-photo:none;--cloud-photo:url("nubes.webp")}
+:root{
+  color-scheme:light;
+  --paper:#f3f0e7;
+  --ink:#152932;
+  --edge:clamp(1.15rem,5vw,5rem);
+  font-family:"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+body{margin:0;background:var(--paper);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+a:focus-visible{outline:2px solid currentColor;outline-offset:5px}
+header{
+  position:fixed;z-index:4;inset:0 0 auto;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;padding:1rem var(--edge);
+  color:var(--paper);transition:background-color .2s,color .2s;
+}
+.brand{font-size:clamp(1.4rem,3vw,2rem);font-weight:750;letter-spacing:-.07em}
+.nav-link,.pill{display:inline-flex;align-items:center;gap:.65em;border-radius:100px;font-weight:650}
+.nav-link{border:1px solid currentColor;padding:.55em .9em;font-size:.84rem}
+.runway{position:relative;min-height:197svh;background:#155eae}
+.scene{
+  position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate;
+  display:grid;place-items:center;color:var(--paper);perspective:1000px;
+}
+.landscape,.shade{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.landscape{
+  inset:-8%;
+  background:#236db6 var(--landscape-photo) center 78% / cover no-repeat;
+  transform:translate3d(0,var(--scenery-y,0px),0) scale(var(--scenery-scale,1.1));
+}
+.shade{background:linear-gradient(180deg,#04284b65 0%,#0f3d6918 30%,transparent 60%,#152d2255)}
+.mark{
+  position:absolute;width:min(84vw,78svh);aspect-ratio:1;top:50%;left:50%;
+  transform:translate3d(-50%,calc(-50% + var(--mark-y,14svh)),0)
+    rotateY(var(--mark-angle,-20deg)) rotateZ(var(--mark-roll,-12deg))
+    scale(var(--mark-scale,1.18));
+  transform-style:preserve-3d;pointer-events:none;
+}
+.mark svg{display:block;width:100%;height:100%;overflow:visible}
+.message{
+  position:relative;width:min(100% - 2.3rem,58rem);margin-top:9svh;text-align:center;
+  opacity:var(--message-opacity,0);transform:translateY(var(--message-y,25px));
+  text-shadow:0 2px 18px #10365b90;
+}
+.message[data-waiting]{visibility:hidden}
+.eyebrow{margin:0 0 .7rem;font-size:clamp(.95rem,2vw,1.12rem);font-weight:600}
+h1,h2{margin:0;font-weight:730;letter-spacing:-.065em;line-height:.95;text-wrap:balance}
+h1{font-size:clamp(3.25rem,9vw,8rem)}
+h2{font-size:clamp(3rem,7vw,6.6rem)}
+.pill{margin-top:1.6rem;background:var(--paper);color:var(--ink);padding:.72em 1.1em;text-shadow:none}
+.scroll-cue{
+  position:absolute;bottom:1.5rem;left:50%;translate:-50% 0;padding:.55rem .9rem;
+  border:1px solid #ffffff90;border-radius:100px;background:#14345366;
+}
+.scroll-cue[hidden]{display:none}
+footer{padding:1.5rem var(--edge);border-top:1px solid #15293225}
+@media(max-width:650px){.landscape{background-position:58% 100%}.mark{width:min(100vw,71svh)}}
+@media(max-height:520px){h1{font-size:clamp(2.5rem,6.5vw,4rem)}.message{margin-top:12svh}.message .pill{margin-top:.7rem}}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  header{transition:none}
+  .runway{min-height:100svh}
+  .mark{transform:translate(-50%,-50%) translateY(-29svh) scale(.25)}
+  .landscape{transform:scale(1.04)}
+  .message{opacity:1;transform:none}
+  .scroll-cue{display:none}
+}
+
+/* The landscape spans the intro and the product scenes. */
+:root{
+  --cycle:3s;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+}
+header{height:4.25rem;background:linear-gradient(#073868a8,transparent)}
+.nav-mark{
+  position:absolute;left:50%;top:50%;width:2.5rem;transform:translate(-50%,-50%);
+  opacity:var(--nav-opacity,0);visibility:hidden;
+}
+header.docked .nav-mark{visibility:visible}
+.nav-mark svg{display:block;width:100%}
+main{position:relative;isolation:isolate;background:#155eae}
+.backdrop{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}
+.landscape{
+  inset:-9%;background-position:center 84%;
+  transform:translate3d(0,var(--scenery-y,0px),0) scale(var(--scenery-scale,1.08));
+}
+/* Trama de cielo del manual, con un centro despejado y tierra en foto. */
+.backdrop .landscape{filter:saturate(.76) contrast(.93)}
+.shade{
+  background:linear-gradient(180deg,#2347607a,#406b871a 38%,#24455418 66%,#172e3b9c);
+}
+.sky-texture{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle,#f1eee4b8 .65px,transparent 1px) 0 0/4px 4px;
+  opacity:.38;
+  mask-image:
+    linear-gradient(#000 0 61%,transparent 75%),
+    radial-gradient(ellipse at 50% 46%,transparent 0 29%,#000 68%);
+  mask-composite:intersect;
+}
+@media(max-width:650px){
+  .sky-texture{
+    mask-image:
+      linear-gradient(#000 0 59%,transparent 74%),
+      radial-gradient(ellipse at 50% 47%,transparent 0 40%,#000 81%);
+  }
+}
+.runway{min-height:212svh;background:transparent}
+.scene{perspective:none}
+.mark{
+  top:0;width:2.5rem;
+  transform:translate3d(-50%,var(--mark-y,calc(60svh - 1.25rem)),0)
+    rotate(var(--mark-turn,0deg)) scale(var(--mark-scale,9));
+  opacity:var(--mark-opacity,1);
+}
+.chapters{color:#fff;padding:0 var(--edge) 8svh}
+.chapter{
+  position:relative;max-width:68rem;margin:auto;min-height:90svh;padding:12svh 0;
+  display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:clamp(1.5rem,5vw,5rem);align-items:center;
+}
+.chapter-copy{text-shadow:0 1px 18px #06355ab8}
+.chapter-copy p:last-child{font-size:clamp(1.12rem,2vw,1.5rem);max-width:29ch;line-height:1.45}
+.demo{
+  color:#162d3b;background:#f7f9fb;border-radius:1rem;overflow:hidden;
+  box-shadow:0 2rem 4rem #06264366;
+  transform:perspective(950px) translateY(var(--panel-y,0px)) rotateX(var(--panel-tilt,0deg));
+  opacity:var(--panel-opacity,1);
+}
+.demo-bar{display:flex;justify-content:space-between;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid #d7e0e7;font-size:.85rem}
+.demo-bar span{color:#526579}
+.demo-body{padding:clamp(1.25rem,4vw,2.8rem)}
+.demo-body strong{display:block;font-size:clamp(1.3rem,3vw,2rem);margin-bottom:1rem}
+.demo-choice,.demo-grid span{padding:.8rem;border-radius:.4rem;background:#eaf1f7;margin-top:.55rem}
+.demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+footer{position:relative;background:#123755;color:#fff}
+@media(max-width:650px){
+  .landscape{background-position:65% bottom}
+  .mark{width:2.5rem}
+  header .nav-link{font-size:.7rem;padding:.5em .65em}
+  .chapter{min-height:82svh;grid-template-columns:1fr;align-content:center}
+}
+@media(prefers-reduced-motion:reduce){
+  .mark{display:none}
+  .backdrop .landscape{transform:none}
+  .demo{transform:none;opacity:1}
+}
+
+.half,.cover{fill:#fff}
+.half,.logo{transform-box:view-box;transform-origin:960px 457.8px}
+.logo{animation:enter var(--cycle) both}
+@keyframes enter{0%{opacity:0;transform:scale(.96);animation-timing-function:var(--ease-out)}10%,100%{opacity:1;transform:scale(1)}}
+/* el rayo: borde en zigzag que cruza de izquierda a derecha en ~330 ms, arranca a toda velocidad y frena */
+.bolt{animation:bolt var(--cycle) both}
+@keyframes bolt{0%,16%{transform:translateX(-24px);animation-timing-function:var(--ease-out)}27%,100%{transform:translateX(200px)}}
+.top{animation:nudgeT var(--cycle) both}.bot{animation:nudgeB var(--cycle) both}
+@keyframes nudgeT{0%,28%{transform:translate(0,0);animation-timing-function:var(--ease-out)}35%{transform:translate(-3px,-3px);animation-timing-function:var(--ease-in-out)}48%,100%{transform:translate(0,0)}}
+@keyframes nudgeB{0%,28%{transform:translate(0,0);animation-timing-function:var(--ease-out)}35%{transform:translate(3px,3px);animation-timing-function:var(--ease-in-out)}48%,100%{transform:translate(0,0)}}
+
+@media(prefers-reduced-motion:reduce){
+  .mark .logo,.mark .half,.mark .bolt{animation:none}
+  .mark .bolt{transform:translateX(200px)}
+}
+
+header.solid{background:#172d34;color:#fff}
+.message>p:not(.eyebrow){max-width:37rem;margin:1rem auto 0;line-height:1.4;font-size:clamp(1rem,2vw,1.25rem)}
+.layout-body{position:relative;background:#f3f0e7;color:#172d34}
+.capabilities{margin:0;padding:1.2rem var(--edge);list-style:none;background:#172d34;color:#fff;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;font-size:.93rem}
+.layout-section{padding:clamp(3.5rem,9vw,8rem) var(--edge)}
+.layout-wrap{max-width:72rem;margin:auto}
+.layout-section h2{font-size:clamp(2.6rem,5.8vw,5.6rem);max-width:21ch}
+.layout-section h3{font-size:clamp(1.15rem,2vw,1.6rem);letter-spacing:-.035em;margin:.1rem 0 .6rem}
+.layout-section p{line-height:1.55}
+.editorial-copy{max-width:43rem;margin:1.5rem 0 2.5rem}
+.thesis{background:#dfe3df}
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid #263e4230;border-radius:1rem;overflow:hidden}
+.compare h3,.compare p{padding:1rem 1.2rem;margin:0}
+.compare h3{background:#edf0ec}
+.compare h3:nth-child(2),.compare-row p:nth-child(2){background:#c8d9d5}
+.compare-row{display:contents}
+.compare-row p{border-top:1px solid #263e4230}
+.diagnosis{background:#e8eeeb}
+.lenses{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;padding:0;list-style:none;margin:2rem 0}
+.lenses li,.map-card,.profiles article,.question-card{padding:clamp(1.05rem,2.5vw,1.8rem);border:1px solid #263e4230;background:#f8f7f0;border-radius:1rem}
+.lenses li,.map-card{transform:translateY(var(--panel-y,0px));opacity:var(--panel-opacity,1)}
+.priority{max-width:44rem;padding:1rem 1.5rem;background:#1e3942;color:white;border-radius:1rem}
+.priority a{text-decoration:underline}
+.map-section{background:#ede4d7}
+.map-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(2rem,7vw,6rem);align-items:start;margin-top:2rem}
+.map-anchor{position:sticky;top:6rem}
+.map-promise{font-size:clamp(1.4rem,2.7vw,2.2rem);font-weight:650;margin-top:0}
+.mini-map{text-align:center;padding:1.4rem;background:#e2d1bf;border-radius:1rem}
+.mini-map span{display:inline-block;padding:.45rem .65rem;border:1px solid #68452655;border-radius:.4rem}
+.mini-map i{display:block;width:1px;height:1.25rem;background:#684526;margin:auto}
+.mini-map>div{display:flex;justify-content:center;flex-wrap:wrap;gap:.35rem}
+.map-cards{display:grid;gap:.75rem}
+.profiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;margin-top:2rem}
+.closing{background:#d9e4e2}
+.question-card{max-width:38rem;margin-top:1.75rem}
+.question-card fieldset{border:0;padding:0;margin:0}
+.question-card legend{font-weight:700}
+.question-card label{display:flex;gap:.5rem;margin:.7rem 0}
+.question-number,.wireframe-note{font-size:.85rem;color:#435961}
+.faq details{border-bottom:1px solid #263e4230;padding:1rem 0}
+.faq details:first-of-type{margin-top:2rem}
+.faq summary{cursor:pointer;font-size:1.1rem;font-weight:650}
+.faq details p{max-width:50rem}
+@media(max-width:720px){
+ .capabilities,.lenses{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .profiles,.map-layout{grid-template-columns:1fr}
+ .map-anchor{position:static}
+ .compare h3,.compare p{padding:.75rem;font-size:.9rem}
+ .compare h3{font-size:1rem}
+}
+@media(max-width:420px){.lenses{grid-template-columns:1fr}}
+
+.mark .logo-phase{opacity:var(--halves-opacity,1)}
+.mark .source-gap{opacity:var(--bolt-focus,0);fill:#fff}
+
+.cielo .backdrop{
+  background:linear-gradient(165deg,#285a78 0%,#3e7d9d 48%,#2396c8 100%);
+}
+.cielo .backdrop .landscape{
+  inset:-6%;
+  background:transparent var(--cloud-photo) 50% 48% / 108% auto no-repeat;
+  filter:none;
+  transform:translate3d(0,var(--scenery-y,0px),0);
+  animation:cloud-drift 28s ease-in-out infinite alternate;
+}
+@keyframes cloud-drift{
+  from{translate:-1.75% 0}
+  to{translate:1.75% -1%}
+}
+.cielo .shade{background:linear-gradient(180deg,#132b4560,transparent 36%,#143b562e 72%,#173c5850)}
+@media(max-width:650px){
+  .cielo .backdrop .landscape{background-size:155% auto;background-position:50% 50%}
+}
+@media(prefers-reduced-motion:reduce){
+  .cielo .backdrop .landscape{transform:none;animation:none}
+}
+</style>
+<noscript><style>.runway{min-height:100svh}.mark{transform:translate(-50%,-50%) translateY(-29svh) scale(.25)}.message[data-waiting]{opacity:1;transform:none;visibility:visible}.scroll-cue{display:none}</style></noscript>
+</head>
+<body class="cielo">
+<header><a class="brand" href="#inicio">realsource.</a><a class="nav-mark" href="#inicio" aria-label="Volver al inicio"><svg viewBox="866 364 188 188" aria-hidden="true">
+
+<g fill="#fff"><path  d="M 960 376.308594 C 959.875 376.308594 959.75 376.3125 959.625 376.3125 C 930.65625 376.445312 905.261719 391.6875 890.914062 414.566406 C 890.261719 415.605469 890.273438 416.933594 890.945312 417.957031 C 904.925781 439.316406 929.0625 453.429688 956.492188 453.429688 L 956.871094 453.429688 C 958.597656 453.429688 960 452.027344 960 450.300781 L 960 407.398438 C 960 404 964.648438 403.039062 965.996094 406.15625 C 978.011719 433.96875 1005.683594 453.429688 1037.902344 453.429688 L 1038.003906 453.429688 C 1039.847656 453.429688 1041.296875 451.84375 1041.121094 450.007812 C 1037.199219 408.65625 1002.378906 376.308594 960 376.308594"/><path  d="M 963.199219 462.175781 L 963.128906 462.175781 C 961.402344 462.175781 960 463.574219 960 465.304688 L 960 508.171875 C 960 511.566406 955.351562 512.53125 954.003906 509.414062 C 941.984375 481.621094 914.320312 462.175781 882.109375 462.175781 L 881.996094 462.175781 C 880.152344 462.175781 878.703125 463.761719 878.875 465.597656 C 882.800781 506.945312 917.621094 539.292969 960 539.292969 C 960.128906 539.292969 960.257812 539.289062 960.390625 539.289062 C 989.246094 539.152344 1014.558594 524.019531 1028.929688 501.28125 C 1029.585938 500.246094 1029.578125 498.921875 1028.910156 497.894531 C 1014.957031 476.394531 990.738281 462.175781 963.199219 462.175781 "/>
+</g></svg></a><a class="nav-link" href="#real-map">Conocé real map <span aria-hidden="true">↗</span></a></header>
+<main id="inicio">
+<section class="runway" aria-labelledby="title">
+  <div class="scene">
+    <div class="backdrop" aria-hidden="true"><div class="landscape"></div><div class="shade"></div><div class="sky-texture"></div></div>
+
+    <div class="mark" aria-hidden="true"><svg viewBox="866 364 188 188" aria-hidden="true">
+<defs><mask id="rayo-mask" maskUnits="userSpaceOnUse" x="600" y="340" width="700" height="240"><rect x="600" y="340" width="700" height="240" fill="#fff"/>
+<polygon class="bolt" points="600,350 884,350 872,438 894,450 876,566 600,566" fill="#000"/></mask>
+<mask id="source-gap-mask" maskUnits="userSpaceOnUse" x="866" y="364" width="188" height="188">
+<circle cx="960" cy="457.8" r="72" fill="#fff"/>
+<path d="M 960 376.308594 C 959.875 376.308594 959.75 376.3125 959.625 376.3125 C 930.65625 376.445312 905.261719 391.6875 890.914062 414.566406 C 890.261719 415.605469 890.273438 416.933594 890.945312 417.957031 C 904.925781 439.316406 929.0625 453.429688 956.492188 453.429688 L 956.871094 453.429688 C 958.597656 453.429688 960 452.027344 960 450.300781 L 960 407.398438 C 960 404 964.648438 403.039062 965.996094 406.15625 C 978.011719 433.96875 1005.683594 453.429688 1037.902344 453.429688 L 1038.003906 453.429688 C 1039.847656 453.429688 1041.296875 451.84375 1041.121094 450.007812 C 1037.199219 408.65625 1002.378906 376.308594 960 376.308594" fill="#000"/><path d="M 963.199219 462.175781 L 963.128906 462.175781 C 961.402344 462.175781 960 463.574219 960 465.304688 L 960 508.171875 C 960 511.566406 955.351562 512.53125 954.003906 509.414062 C 941.984375 481.621094 914.320312 462.175781 882.109375 462.175781 L 881.996094 462.175781 C 880.152344 462.175781 878.703125 463.761719 878.875 465.597656 C 882.800781 506.945312 917.621094 539.292969 960 539.292969 C 960.128906 539.292969 960.257812 539.289062 960.390625 539.289062 C 989.246094 539.152344 1014.558594 524.019531 1028.929688 501.28125 C 1029.585938 500.246094 1029.578125 498.921875 1028.910156 497.894531 C 1014.957031 476.394531 990.738281 462.175781 963.199219 462.175781 " fill="#000"/>
+</mask></defs>
+<g class="logo-phase"><g class="logo"><path class="half top" d="M 960 376.308594 C 959.875 376.308594 959.75 376.3125 959.625 376.3125 C 930.65625 376.445312 905.261719 391.6875 890.914062 414.566406 C 890.261719 415.605469 890.273438 416.933594 890.945312 417.957031 C 904.925781 439.316406 929.0625 453.429688 956.492188 453.429688 L 956.871094 453.429688 C 958.597656 453.429688 960 452.027344 960 450.300781 L 960 407.398438 C 960 404 964.648438 403.039062 965.996094 406.15625 C 978.011719 433.96875 1005.683594 453.429688 1037.902344 453.429688 L 1038.003906 453.429688 C 1039.847656 453.429688 1041.296875 451.84375 1041.121094 450.007812 C 1037.199219 408.65625 1002.378906 376.308594 960 376.308594"/><path class="half bot" d="M 963.199219 462.175781 L 963.128906 462.175781 C 961.402344 462.175781 960 463.574219 960 465.304688 L 960 508.171875 C 960 511.566406 955.351562 512.53125 954.003906 509.414062 C 941.984375 481.621094 914.320312 462.175781 882.109375 462.175781 L 881.996094 462.175781 C 880.152344 462.175781 878.703125 463.761719 878.875 465.597656 C 882.800781 506.945312 917.621094 539.292969 960 539.292969 C 960.128906 539.292969 960.257812 539.289062 960.390625 539.289062 C 989.246094 539.152344 1014.558594 524.019531 1028.929688 501.28125 C 1029.585938 500.246094 1029.578125 498.921875 1028.910156 497.894531 C 1014.957031 476.394531 990.738281 462.175781 963.199219 462.175781 "/>
+<circle class="cover" cx="960" cy="457.8" r="81.8" mask="url(#rayo-mask)"/></g>
+</g>
+<rect class="source-gap" x="866" y="364" width="188" height="188" mask="url(#source-gap-mask)"/>
+</svg></div>
+    <div class="message" data-waiting>
+      <p class="eyebrow">Consultora de marca y crecimiento</p>
+      <h1 id="title">Dale dirección<br>a tu marca.</h1><p>Ayudamos a marcas que están por salir al mercado y a empresas que ya están creciendo a definir qué decir, a quién y cómo distribuirlo para construir demanda.</p>
+      <a class="pill" href="#empezar">Empezá por el diagnóstico <span aria-hidden="true">↓</span></a>
+    </div>
+    <a class="scroll-cue" href="#real-map">Explorá <span aria-hidden="true">↓</span></a>
+  </div>
+</section>
+<div class="layout-body"><ul class="capabilities"><li>Posicionamiento de marca</li><li>Distribución orgánica</li><li>Plan de adquisición</li><li>Crecimiento con previsibilidad</li></ul><section class="layout-section thesis" id="tesis" aria-labelledby="tesis-title"><div class="layout-wrap"><h2 id="tesis-title">Las empresas que escalan construyen marca y distribución al mismo tiempo.</h2><div class="editorial-copy"><p>Una marca fuerte necesita un mensaje que la gente pueda reconocer y canales que lo hagan llegar a las personas correctas. Así operan las nuevas <strong>media companies</strong>: desarrollan una voz propia, publican con una línea editorial y construyen una relación directa con su audiencia. Esa relación ayuda a generar demanda y entender qué mueve a las personas a comprar.</p><p><strong>real map es el método para llevar esa forma de trabajar a tu empresa.</strong></p></div><div class="compare"><h3>Marketing por impulso</h3><h3>Una marca que opera como media company</h3><div class="compare-row"><p>Cada campaña arranca con un mensaje distinto.</p><p>El posicionamiento orienta qué se dice y qué se repite.</p></div><div class="compare-row"><p>La pauta concentra la llegada a nuevos clientes.</p><p>Contenido, canales propios y pauta cumplen funciones complementarias.</p></div><div class="compare-row"><p>Se eligen formatos por tendencia o urgencia.</p><p>Cada formato responde a una intención editorial y comercial.</p></div><div class="compare-row"><p>Se mide alcance sin saber qué aporta al negocio.</p><p>Se mide qué genera atención, demanda y oportunidades de venta.</p></div></div></div></section><section class="layout-section diagnosis" id="diagnostico" aria-labelledby="diagnostico-title"><div class="layout-wrap"><h2 id="diagnostico-title">Antes de decidir qué publicar, entendamos qué necesita resolver tu marca.</h2><p>Empezamos cruzando cuatro miradas:</p><ol class="lenses"><li><h3>La empresa</h3><p>Qué la hace distinta, qué fortalezas puede demostrar, qué límites tiene y cómo la perciben otros.</p></li><li><h3>El público</h3><p>Qué problema intenta resolver, qué desea, qué rechaza y qué lo lleva a elegir.</p></li><li><h3>El mercado</h3><p>Contra qué marcas y alternativas compite, y qué ventajas o desventajas ve el público en cada una.</p></li><li><h3>El mundo</h3><p>Qué tendencias y cambios afectan a la empresa, a su categoría y a sus clientes.</p></li></ol><div class="priority"><p>Al cruzar esas miradas, identificamos qué conviene potenciar, qué está frenando la comunicación y qué decisión vale la pena tomar primero. Esa prioridad orienta el mapa.</p><a href="#real-map">Ver cómo se arma el mapa ↓</a></div></div></section><section class="layout-section map-section" id="real-map" aria-labelledby="real-map-title"><div class="layout-wrap"><h2 id="real-map-title">real map</h2><div class="map-layout"><div class="map-anchor"><p class="map-promise">Un mapa para que tu equipo sepa qué construir, dónde distribuirlo y cómo medirlo.</p><div class="mini-map" aria-hidden="true"><span>Prioridad</span><i></i><div><span>Marca</span><span>Canales</span><span>Formatos</span></div></div></div><div class="map-cards"><article class="map-card"><h3><strong>Estrategia de marca</strong></h3><p>A quién nos dirigimos, qué lugar queremos ocupar y qué promesa y narrativa vamos a sostener. Incluye criterios de identidad visual, verbal y sonora.</p></article><article class="map-card"><h3><strong>Estrategia de adquisición</strong></h3><p>Cómo vamos a generar demanda y conectar el descubrimiento de la marca con una oportunidad comercial.</p></article><article class="map-card"><h3><strong>Plan táctico de canales</strong></h3><p>Qué función cumple cada canal, qué objetivo tiene y cómo sabremos si está aportando.</p></article><article class="map-card"><h3><strong>Plan y formatos para redes</strong></h3><p>Qué temas podemos sostener, en qué formatos y qué primeras pruebas conviene hacer.</p></article><article class="map-card"><h3><strong>Entrenamiento online</strong></h3><p>Cómo transferir el criterio al equipo para que pueda aplicar el mapa y revisar sus decisiones.</p></article><article class="map-card"><h3><strong>Brand book opcional</strong></h3><p>Cuando el proyecto lo requiere, convertir las decisiones de identidad en una guía de uso para el equipo.</p></article><p>El mapa incluye criterios para sostener la dirección: qué tiene que mantenerse reconocible, qué se puede probar y qué indicadores se revisan. Si el equipo necesita apoyo para ejecutar, real content y real growth pueden ser una etapa posterior.</p></div></div></div></section><section class="layout-section audience" id="para-quien" aria-labelledby="para-quien-title"><div class="layout-wrap"><h2 id="para-quien-title">Para quién es</h2><p>Para marcas que están por lanzarse y para equipos que necesitan ordenar cómo comunican y distribuyen.</p><div class="profiles"><article><h3>Founders que están lanzando una marca</h3><p>Querés salir al mercado con una promesa clara, un plan de canales y acuerdos sobre quién decide, qué tiene que mantenerse coherente y cómo revisar lo que funciona. Eso es gobernabilidad de marca desde el primer día.</p></article><article><h3>Founders, dueños y socios de empresas en marcha</h3><p>La oferta funciona y querés que la marca crezca con un mensaje claro, sin tener que redefinirlo en cada campaña.</p></article><article><h3>Líderes de marketing o ventas</h3><p>Tenés un equipo que ejecuta y necesitás alinear prioridades, canales y métricas con una misma dirección.</p></article></div></div></section><section class="layout-section closing" id="empezar" aria-labelledby="empezar-title"><div class="layout-wrap"><h2 id="empezar-title">Empezá por el diagnóstico.</h2><p>Respondé tres preguntas sobre tu marca, tu prioridad y tu equipo. Vas a recibir una orientación inicial y podés dejar tu email para conversar.</p><div class="question-card"><p class="question-number">Pregunta 1 de 3</p><fieldset><legend>¿En qué momento está tu marca?</legend><label><input type="radio" name="stage"> Estoy preparando el lanzamiento</label><label><input type="radio" name="stage"> Mi empresa ya está en marcha</label></fieldset><p class="wireframe-note">Vista previa del primer paso</p></div></div></section><section class="layout-section faq" id="dudas" aria-labelledby="dudas-title"><div class="layout-wrap"><h2 id="dudas-title">Sacá tus dudas</h2><details><summary>¿Para quién es real map?</summary><p>Para founders que están preparando un lanzamiento y para empresas en marcha que quieren ordenar su posicionamiento, comunicación y distribución.</p></details><details><summary>¿Puedo hacer real map antes de lanzar?</summary><p>Sí. Trabajamos con lo que ya sabés de tu oferta, tu público y el mercado. El mapa deja una dirección para el lanzamiento, define qué supuestos conviene probar y establece cómo va a tomar decisiones el equipo desde el primer día.</p></details><details><summary>¿Qué diferencia hay entre el cuestionario y el diagnóstico?</summary><p>El cuestionario te da una primera orientación. El diagnóstico es la primera etapa de real map: analiza la empresa, el público, el mercado y el contexto para definir prioridades.</p></details><details><summary>¿Qué me llevo al terminar?</summary><p>Un mapa que reúne la dirección de marca, el rol de los canales, prioridades de contenido y criterios para medir y sostener el trabajo.</p></details><details><summary>¿Tengo que contratar la ejecución?</summary><p>Podés trabajar solo el mapa. Si necesitás apoyo después, evaluamos qué parte conviene acompañar con real content o real growth.</p></details><details><summary>¿El brand book está incluido?</summary><p>El mapa reúne criterios de identidad. El brand book completo se puede sumar según el alcance del proyecto.</p></details></div></section></div>
+</main>
+<footer><a href="#inicio">realsource. ↑</a></footer>
+<script>
+const runway = document.querySelector('.runway');
+const scene = document.querySelector('.scene');
+const message = document.querySelector('.message');
+const cue = document.querySelector('.scroll-cue');
+const header = document.querySelector('header');
+const landscape = document.querySelector('.landscape');
+const mark = document.querySelector('.mark');
+const navMark = document.querySelector('.nav-mark');
+const panels = [...document.querySelectorAll('.lenses li, .map-card')];
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const clamp = value => Math.min(1, Math.max(0, value));
+const ease = value => value * value * (3 - 2 * value);
+let frame = 0;
+
+function render() {
+  frame = 0;
+  const viewport = scene.offsetHeight;
+  const distance = Math.max(1, runway.offsetHeight - viewport);
+  const progress = clamp(-runway.getBoundingClientRect().top / distance);
+  const reduced = reducedMotion.matches;
+  const dock = ease(clamp((progress - .25) / .65));
+  const turnIn = ease(clamp(progress / .26));
+  const turnOut = ease(clamp((progress - .62) / .28));
+  const turn = 90 * turnIn + 270 * turnOut;
+  const boltIn = ease(clamp((progress - .19) / .07));
+  const boltOut = ease(clamp((progress - .52) / .10));
+  const boltFocus = reduced ? 0 : boltIn * (1 - boltOut);
+  const halvesOut = ease(clamp((progress - .14) / .10));
+  const halvesBack = ease(clamp((progress - .61) / .12));
+  const halvesOpacity = reduced ? 1 : (1 - halvesOut) + halvesBack;
+  const reveal = reduced ? 1 : ease(clamp((progress - .67) / .28));
+  scene.style.setProperty('--mark-turn', turn + 'deg');
+  scene.style.setProperty('--bolt-focus', boltFocus);
+  scene.style.setProperty('--halves-opacity', halvesOpacity);
+  const navBounds = navMark.getBoundingClientRect();
+  const markSize = mark.offsetWidth || navBounds.width;
+  const startScale = Math.min(scene.clientWidth * .65, viewport * .57) / markSize;
+  const startY = viewport * .58 - markSize / 2;
+  const targetX = navBounds.left + navBounds.width / 2 - scene.clientWidth / 2;
+  const crossfade = reduced ? 1 : ease(clamp((progress - .89) / .06));
+  scene.style.setProperty('--mark-scale', startScale + (1 - startScale) * dock);
+  scene.style.setProperty('--mark-y', (startY + (navBounds.top - startY) * dock) + 'px');
+  mark.style.left = `calc(50% + ${targetX * dock}px)`;
+  scene.style.setProperty('--mark-opacity', 1 - crossfade);
+  header.style.setProperty('--nav-opacity', crossfade);
+  header.classList.toggle('docked', crossfade > 0);
+  const travel = reduced ? 0 : progress;
+  landscape.style.setProperty('--scenery-y', -46 * travel + 'px');
+  scene.style.setProperty('--message-opacity', reveal);
+  scene.style.setProperty('--message-y', 25 * (1 - reveal) + 'px');
+  message.toggleAttribute('data-waiting', reveal < .08);
+  cue.hidden = progress > .14;
+  header.classList.toggle('solid', runway.getBoundingClientRect().bottom < header.offsetHeight);
+  panels.forEach(panel => {
+    const panelTop = panel.getBoundingClientRect().top - (parseFloat(panel.style.getPropertyValue('--panel-y')) || 0);
+    const entry = reduced ? 1 : ease(clamp((innerHeight - panelTop) / (innerHeight * .53)));
+    panel.style.setProperty('--panel-y', (1 - entry) * 24 + 'px');
+    panel.style.setProperty('--panel-tilt', (1 - entry) * 13 + 'deg');
+    panel.style.setProperty('--panel-opacity', .25 + entry * .75);
+  });
+}
+
+function schedule() {
+  if (!frame) frame = requestAnimationFrame(render);
+}
+cue.addEventListener('click', event => {
+  event.preventDefault();
+  window.scrollTo({ top: (runway.offsetHeight - scene.offsetHeight) * .98, behavior: 'smooth' });
+});
+addEventListener('scroll', schedule, { passive: true });
+addEventListener('resize', schedule);
+reducedMotion.addEventListener('change', schedule);
+render();
+</script>
+</body>
+</html>
