@@ -21,7 +21,9 @@ const assets = [
 
 await rm(output, { recursive: true, force: true });
 await mkdir(join(output, 'fonts'), { recursive: true });
+await mkdir(join(output, 'aplicar'), { recursive: true });
 await Promise.all([
   copyFile(join(source, 'apertura.html'), join(output, 'index.html')),
+  copyFile(join(root, 'prototypes', 'aplicar', 'index.html'), join(output, 'aplicar', 'index.html')),
   ...assets.map(asset => copyFile(join(source, asset), join(output, asset))),
 ]);
